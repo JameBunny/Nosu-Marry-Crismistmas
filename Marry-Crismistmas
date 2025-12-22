@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Coming Soon — Merry Christmas ❄️</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+
+    body{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:radial-gradient(circle at top,#0f172a,#020617 70%);
+      color:#f8fafc;
+      font-family:'Noto Sans','Noto Sans Thai','Noto Sans JP',system-ui;
+      overflow:hidden;
+      perspective:1400px;
+    }
+
+    canvas{position:fixed;inset:0;pointer-events:none}
+
+    .wrap{
+      text-align:center;
+      width:100%;
+      padding:3vmin;
+      transform-style:preserve-3d;
+      transition:transform .2s ease;
+      z-index:2;
+    }
+
+    .line{
+      font-weight:700;
+      font-size:clamp(34px,10vw,150px);
+      line-height:1.05;
+      text-shadow:0 12px 40px rgba(0,0,0,.7);
+      opacity:0;
+      transition:opacity .6s ease, transform .2s ease;
+    }
+
+    .sub{
+      font-weight:700;
+      font-size:clamp(22px,6vw,90px);
+      margin-top:1.5vmin;
+      text-shadow:0 8px 30px rgba(0,0,0,.6);
+      opacity:0;
+      transition:opacity .6s ease, transform .2s ease;
+    }
+
+    .show .line,.show .sub{opacity:1}
+
+    /* Floating message box */
+    .message{
+      position:fixed;
+      bottom:10vmin;
+      left:50%;
+      transform:translateX(-50%) translateZ(-200px);
+      background:rgba(255,255,255,.12);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:14px 18px;
+      min-width:260px;
+      max-width:80vw;
+      box-shadow:0 10px 40px rgba(0,0,0,.4);
+      animation:float 6s ease-in-out infinite;
+      z-index:1;
+    }
+    .message input{
+      width:100%;
+      background:transparent;
+      border:none;
+      outline:none;
+      color:#fff;
+      font-size:clamp(14px,3.5vw,20px);
+      text-align:center;
+    }
+
+    @keyframes float{
+      0%,100%{transform:translateX(-50%) translateY(0) translateZ(-200px)}
+      50%{transform:translateX(-50%) translateY(-14px) translateZ(-220px)}
+    }
+
+    /* Heart */
+    .heart{
+      position:fixed;
+      bottom:4vmin;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:5vmin;
+      animation:pulse 2.5s ease-in-out infinite;
+      opacity:.9;
+      z-index:2;
+    }
+    @keyframes pulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.15)}}
+
+    /* Music button */
+    .music-btn{
+      position:fixed;
+      top:3vmin;right:3vmin;
+      background:rgba(255,255,255,.15);
+      border:none;border-radius:50%;
+      width:52px;height:52px;
+      font-size:24px;color:#fff;
+      cursor:pointer;
+      backdrop-filter:blur(10px);
+      z-index:3;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="snow"></canvas>
+
+  <!-- Music -->
+  <audio id="bgm" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/12/14/audio_2f7b3f5b1a.mp3" type="audio/mpeg">
+  </audio>
+  <button class="music-btn" id="musicBtn">🎵</button>
+
+  <div class="wrap" id="wrap">
+    <div class="line" id="line">Coming Soon!</div>
+    <div class="sub" id="sub">Merry Christmas ❄️</div>
+  </div>
+
+  <div class="message">
+    <input type="text" placeholder="เขียนข้อความถึงคนพิเศษตรงนี้… 💖" />
+  </div>
+
+  <div class="heart">❤️</div>
+
+  <script>
+    /* ---------- TEXT ROTATION ---------- */
+    const slides = [
+      {line:'Coming Soon!', sub:'Merry Christmas ❄️'},
+      {line:'เร็ว ๆ นี้!', sub:'สุขสันต์วันคริสต์มาส ❄️'},
+      {line:'近日公開！', sub:'メリークリスマス ❄️'},
+      {line:'Happy New Year 2026 🎆', sub:'สวัสดีปีใหม่ 2026'},
+      {line:'Happy New Year 2026 🎆', sub:'あけましておめでとうございます 2026'}
+    ];
+
+    const lineEl = document.getElementById('line');
+    const subEl  = document.getElementById('sub');
+    const wrap   = document.getElementById('wrap');
+
+    let idx = 0;
+    function showSlide(i){
+      wrap.classList.remove('show');
+      setTimeout(()=>{
+        lineEl.textContent = slides[i].line;
+        subEl.textContent  = slides[i].sub;
+        wrap.classList.add('show');
+      },200);
+    }
+    showSlide(idx);
+    setInterval(()=>{ idx=(idx+1)%slides.length; showSlide(idx); },3500);
+
+    /* ---------- TILT (mouse + touch + gyroscope) ---------- */
+    function applyTilt(rx, ry){
+      wrap.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+    }
+
+    window.addEventListener('mousemove',e=>{
+      applyTilt((e.clientY/window.innerHeight-0.5)*20,(e.clientX/window.innerWidth-0.5)*-20);
+    });
+
+    window.addEventListener('touchmove',e=>{
+      const t=e.touches[0];
+      applyTilt((t.clientY/window.innerHeight-0.5)*20,(t.clientX/window.innerWidth-0.5)*-20);
+    },{passive:true});
+
+    // Gyroscope (mobile / iPad)
+    if(window.DeviceOrientationEvent){
+      window.addEventListener('deviceorientation',e=>{
+        const rx = Math.max(-20, Math.min(20, e.beta/3));
+        const ry = Math.max(-20, Math.min(20, e.gamma/3));
+        applyTilt(rx, ry);
+      });
+    }
+
+    /* ---------- MUSIC ---------- */
+    const bgm=document.getElementById('bgm');
+    const btn=document.getElementById('musicBtn');
+    let playing=false;
+    btn.addEventListener('click',()=>{
+      playing ? bgm.pause() : bgm.play();
+      playing=!playing;
+      btn.textContent = playing ? '⏸️' : '🎵';
+    });
+
+    /* ---------- SNOW ---------- */
+    const canvas=document.getElementById('snow');
+    const ctx=canvas.getContext('2d');
+    let w,h,flakes=[];
+    function resize(){
+      w=canvas.width=innerWidth;
+      h=canvas.height=innerHeight;
+      flakes=Array.from({length:Math.min(220,w/5)},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*3+1,s:Math.random()*1+0.5}));
+    }
+    addEventListener('resize',resize);resize();
+    function snow(){
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle='rgba(255,255,255,.9)';
+      flakes.forEach(f=>{
+        ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);ctx.fill();
+        f.y+=f.s; f.x+=Math.sin(f.y*0.01)*0.3;
+        if(f.y>h){f.y=-5;f.x=Math.random()*w}
+      });
+      requestAnimationFrame(snow);
+    }
+    snow();
+  </script>
+</body>
+</html>
