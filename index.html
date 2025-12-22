@@ -151,6 +151,7 @@ const TEXTS = {
   }
 };
 let iLine = 0, iSub = 0;
+let prevPhase = null; // track previous phase to reset indexes when phase changes
 
 /* determine phase */
 function getPhase(){
@@ -160,23 +161,49 @@ function getPhase(){
   return 'before25';
 }
 
-/* smoothly update text — line and sub rotate independently */
+/* smoothly update text — line and sub rotate independently
+   - when phase changes, reset counters so rotation starts from the beginning
+   - when newyear phase starts, trigger celebration immediately
+*/
 function updateTexts(){
   const phase = getPhase();
+
+  // if phase changed, reset indexes and trigger immediate actions
+  if(phase !== prevPhase){
+    prevPhase = phase;
+    iLine = 0;
+    iSub = 0;
+
+    // if entering newyear phase, immediately fire celebration and set text instantly
+    if(phase === 'newyear'){
+      // set first newyear texts immediately (no waiting for interval)
+      const first = TEXTS.newyear;
+      lineEl.textContent = first.line[0];
+      subEl.textContent  = first.sub[0];
+      // next rotation will continue from index 1
+      iLine = 1; iSub = 1;
+      startNewYear();
+      return; // done (no fade)
+    }
+
+    // If entering christmas or before25, fall through to normal fade update
+  }
+
   const data = TEXTS[phase];
   const newLine = data.line[iLine % data.line.length];
   const newSub  = data.sub[iSub % data.sub.length];
 
-  // fade out
+  // fade out then in
+  lineEl.style.transition = 'opacity .28s ease';
+  subEl.style.transition  = 'opacity .28s ease';
   lineEl.style.opacity = 0;
   subEl.style.opacity = 0;
 
-  // set after fade, then fade in
   setTimeout(()=>{
     lineEl.textContent = newLine;
-    subEl.textContent = newSub;
+    subEl.textContent  = newSub;
     lineEl.style.opacity = 1;
-    subEl.style.opacity = 1;
+    subEl.style.opacity  = 1;
     iLine++; iSub++;
   }, 300);
 }
@@ -189,7 +216,6 @@ function tick(){
   const diff = NY_TARGET - nowTH();
   if(diff <= 0){
     document.getElementById('countHead').textContent = '🎆 HAPPY NEW YEAR 2026 🎆';
-    // trigger newyear celebration
     startNewYear();
     return;
   }
@@ -221,7 +247,6 @@ setInterval(()=>{
   const g = document.createElement('div');
   g.className = 'gift';
   g.textContent = '🎁';
-  // randomize fall duration and left
   const dur = 6 + Math.random()*4;
   g.style.left = Math.random()*92 + 'vw';
   g.style.animationDuration = dur + 's';
@@ -234,12 +259,9 @@ setInterval(()=>{
 }, 1200);
 
 function openGiftMessage(text){
-  // create box + sparkle particles
   const box = document.createElement('div');
   box.className = 'gift-message'; box.textContent = text;
   document.body.appendChild(box);
-
-  // particles
   for(let i=0;i<18;i++){
     const p = document.createElement('div');
     p.textContent = '✨';
@@ -253,7 +275,6 @@ function openGiftMessage(text){
     ],{duration:900,easing:'cubic-bezier(.2,.8,.2,1)'});
     setTimeout(()=>p.remove(),900);
   }
-
   setTimeout(()=>box.remove(),4800);
 }
 
@@ -326,22 +347,19 @@ let newYearActivated = false;
 function startNewYear(){
   if(newYearActivated) return;
   newYearActivated = true;
-  // cosmetic: change head line immediately
-  // ensure texts rotate will pick new phase
   startFireworksRepeat();
-  // subtle glow on wrap
   wrap.animate([{filter:'brightness(1)'},{filter:'brightness(1.25)'},{filter:'brightness(1)'}],{duration:1400,iterations:1,easing:'ease-out'});
-  // optional confetti: quick burst
   for(let i=0;i<8;i++) spawnFirework();
 }
 
 /* test button to force new year mode immediately (remove if not required) */
 document.getElementById('testBtn').addEventListener('click', ()=>{
-  // set flag and run celebration
   startNewYear();
-  // update head explicitly
+  // ensure texts switch to newyear immediately and reset counters
+  prevPhase = 'newyear';
+  iLine = 1; iSub = 1;
   lineEl.textContent = TEXTS.newyear.line[0];
-  subEl.textContent = TEXTS.newyear.sub[0];
+  subEl.textContent  = TEXTS.newyear.sub[0];
   document.getElementById('countHead').textContent = '🎆 TEST: HAPPY NEW YEAR 2026 🎆';
 });
 
