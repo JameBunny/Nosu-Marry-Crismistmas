@@ -19,7 +19,12 @@ body{
 }
 
 body.newyear{
-  background:radial-gradient(circle at top,#020617,#000);
+  background:radial-gradient(circle at center,#020617,#000);
+  animation:newyearGlow 6s ease-in-out infinite;
+}
+@keyframes newyearGlow{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.15)}
 }
 
 canvas{position:fixed;inset:0;pointer-events:none}
@@ -89,10 +94,31 @@ canvas{position:fixed;inset:0;pointer-events:none}
 
 /* 🎁 Opened gift message */
 .gift-message{
-  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
-  background:#fff;color:#b91c1c;padding:20px 24px;border-radius:20px;
-  font-size:20px;font-weight:700;z-index:50;
-  box-shadow:0 10px 40px rgba(0,0,0,.5)
+  position:fixed;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(0.7);
+  background:linear-gradient(135deg,#fff,#fde68a);
+  color:#b91c1c;
+  padding:22px 26px;
+  border-radius:22px;
+  font-size:22px;
+  font-weight:800;
+  z-index:50;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  animation:giftOpen 0.9s cubic-bezier(.22,.61,.36,1) forwards,
+             giftFloat 4s ease-in-out infinite 0.9s;
+}
+
+@keyframes giftOpen{
+  0%{opacity:0;transform:translate(-50%,-40%) scale(0.5) rotateX(60deg)}
+  60%{opacity:1;transform:translate(-50%,-55%) scale(1.05) rotateX(0deg)}
+  100%{opacity:1;transform:translate(-50%,-60%) scale(1)}
+}
+
+@keyframes giftFloat{
+  0%,100%{transform:translate(-50%,-60%)}
+  50%{transform:translate(-50%,-72%)}
 }
 
 /* 🎆 Countdown (BIG & CLEAR) */
@@ -148,6 +174,7 @@ canvas{position:fixed;inset:0;pointer-events:none}
 </head>
 <body>
 <canvas id="snow"></canvas>
+<canvas id="fireworks"></canvas>
 
 <audio id="bgm" loop>
 <source src="https://cdn.pixabay.com/download/audio/2022/12/14/audio_2f7b3f5b1a.mp3" type="audio/mpeg">
@@ -260,11 +287,34 @@ setInterval(spawnGift,900);
 
 function openGift(){
  if(!savedMsg) return;
+
  const box=document.createElement('div');
  box.className='gift-message';
- box.textContent=savedMsg;
+ box.innerHTML = `🎁<br><span>${savedMsg}</span>`;
  document.body.appendChild(box);
- setTimeout(()=>box.remove(),5000);
+
+ // sparkle particles
+ for(let i=0;i<14;i++){
+   const s=document.createElement('div');
+   s.style.position='fixed';
+   s.style.left='50%';
+   s.style.top='50%';
+   s.style.fontSize='20px';
+   s.style.pointerEvents='none';
+   s.textContent='✨';
+   document.body.appendChild(s);
+
+   const angle=Math.random()*Math.PI*2;
+   const dist=80+Math.random()*60;
+   s.animate([
+     {transform:'translate(-50%,-50%) scale(1)',opacity:1},
+     {transform:`translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(0)`,opacity:0}
+   ],{duration:900,easing:'ease-out'});
+
+   setTimeout(()=>s.remove(),900);
+ }
+
+ setTimeout(()=>box.remove(),6000);
 }
 
 /* COUNTDOWN (Thailand Time – BIG UI) */
