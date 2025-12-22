@@ -37,6 +37,7 @@ body::before{
   position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
   z-index:5;transform-style:preserve-3d;transition:transform .12s linear;
   padding:4vmin;
+  gap: 1.5rem; /* จัดระยะห่างให้สวยงาม */
 }
 .line{
   font-size:clamp(38px,9vw,120px);font-weight:800;line-height:1.02;
@@ -67,6 +68,18 @@ body::before{
 /* music button */
 .music-btn{position:fixed;top:16px;right:16px;width:52px;height:52px;border-radius:50%;border:none;background:rgba(255,255,255,.12);font-size:22px;z-index:20;cursor:pointer;transition:all .3s}
 .music-btn:hover{background:rgba(255,255,255,.2);transform:scale(1.1)}
+
+/* Volume Slider Style */
+#volSlider {
+  position: fixed;
+  top: 80px;      /* วางอยู่ใต้ปุ่มเพลง */
+  right: 16px;    /* ชิดขวาเท่ากับปุ่ม */
+  width: 60px;    /* ความกว้างของแถบ */
+  height: 4px;
+  z-index: 20;
+  cursor: pointer;
+  accent-color: #16a34a; 
+}
 
 /* countdown */
 .countdown{position:fixed;right:16px;bottom:16px;width:min(92vw,320px);background:linear-gradient(135deg,#2563eb,#7c3aed,#db2777);border-radius:22px;padding:12px;z-index:20;box-shadow:0 20px 60px rgba(0,0,0,.45)}
@@ -162,6 +175,7 @@ body::before{
   .message{left:10px;bottom:10px;width:calc(100% - 20px)}
   .countdown{right:10px;bottom:10px;width:calc(100% - 20px)}
   .music-btn{top:10px;right:10px}
+  #volSlider { top: 70px; right: 10px; } /* ปรับตำแหน่ง Slider ในมือถือ */
   .message{bottom:120px}
   .gift-box{width:180px;height:180px}
   .gift-message{max-width:260px;font-size:14px;padding:16px}
@@ -170,7 +184,6 @@ body::before{
 </head>
 <body>
 
-<!-- canvases -->
 <canvas id="snow"></canvas>
 <canvas id="characters"></canvas>
 <canvas id="fireworks"></canvas>
@@ -179,22 +192,26 @@ body::before{
   <source src="song.mp3" type="audio/mpeg">
 </audio>
 
-<!-- music control -->
 <button class="music-btn" id="musicBtn" aria-label="Toggle music">🎵</button>
+<input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.35">
 
-<!-- main text -->
 <div class="wrap" id="wrap">
   <div class="line" id="line">Merry Christmas ❄️</div>
+  <div class="firework-icon">
+      <img src="https://cdn-icons-png.flaticon.com/512/1837/1837458.png" alt="firework" width="60" height="60" style="filter: drop-shadow(0 0 10px rgba(255,215,0,0.7)); animation: pulse 2s infinite;">
+  </div>
   <div class="sub" id="sub">Wishing you warmth and happiness</div>
 </div>
 
-<!-- message box -->
+<style>
+@keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.1)} 100%{transform:scale(1)} }
+</style>
+
 <div class="message" id="messageBox">
   <textarea id="msg" placeholder="เขียนข้อความถึงคนพิเศษ… 💖"></textarea>
   <button id="sendBtn">ส่งข้อความ 💌</button>
 </div>
 
-<!-- countdown -->
 <div class="countdown" id="countdown">
   <div class="head" id="countHead">COUNTDOWN TO 2026</div>
   <div class="time">
@@ -211,9 +228,7 @@ body::before{
 const charCanvas = document.getElementById('characters');
 const charCtx = charCanvas.getContext('2d');
 
-// Initialize character particles
 window.initCharacters = function() {
-  // This will be called by characters.js
   console.log('Characters initialized from main');
 };
 
@@ -225,14 +240,14 @@ const wrap = document.getElementById('wrap');
 const lineEl = document.getElementById('line');
 const subEl = document.getElementById('sub');
 
-/* ========= Persistent Storage ========= */
+/* ========= Persistent Storage (Fixed to localStorage) ========= */
 let allMessages = [];
 
 async function loadAllMessages(){
   try {
-    const result = await window.storage.get('shared-gift-messages', true);
-    if(result && result.value){
-      allMessages = JSON.parse(result.value);
+    const result = localStorage.getItem('shared-gift-messages');
+    if(result){
+      allMessages = JSON.parse(result);
     }
   } catch(e){
     allMessages = [];
@@ -249,7 +264,7 @@ async function saveMessage(msg){
     allMessages = allMessages.slice(-100);
   }
   try {
-    await window.storage.set('shared-gift-messages', JSON.stringify(allMessages), true);
+    localStorage.setItem('shared-gift-messages', JSON.stringify(allMessages));
     return true;
   } catch(e){
     console.error('Failed to save message:', e);
@@ -361,13 +376,19 @@ function tick(){
 let countdownInterval = setInterval(tick, 1000);
 tick();
 
-/* ========= Music control ========= */
+/* ========= Music control & Slider ========= */
 const bgm = document.getElementById('bgm');
 const musicBtn = document.getElementById('musicBtn');
+const volSlider = document.getElementById('volSlider');
 
-// --- เพิ่มบรรทัดนี้เข้าไปตรงนี้ครับ ---
+// ตั้งค่าเริ่มต้น
 bgm.volume = 0.35; 
-// --------------------------------
+volSlider.value = 0.35;
+
+// ปรับเสียงเมื่อเลื่อนแถบ
+volSlider.addEventListener('input', (e) => {
+  bgm.volume = e.target.value;
+});
 
 musicBtn.addEventListener('click', ()=>{ 
   if(bgm.paused){
