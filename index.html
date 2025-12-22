@@ -1,163 +1,997 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Merry Christmas / Happy New Year 2026</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:700&family=Noto+Sans+Thai:700&family=Noto+Sans+JP:700&display=swap" rel="stylesheet">
-
 <style>
-/* ===== RESET ===== */
+/* ========== RESET & BASE ========== */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%}
-
-/* ===== BASE ===== */
 body{
   font-family:'Noto Sans','Noto Sans Thai','Noto Sans JP',system-ui;
-  background:#000;color:#fff;overflow:hidden;
+  background:#000;
+  color:#fff;overflow:hidden;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-/* ===== BACKGROUND ===== */
+/* Dark gradient background */
 .bg-layer{
   position:fixed;inset:0;z-index:0;
   background:radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a15 100%);
 }
 
-/* ===== CANVAS LAYERS ===== */
-#snow{position:fixed;inset:0;z-index:1;pointer-events:none}
-#characters{position:fixed;inset:0;z-index:2;pointer-events:auto}
-#fireworks{position:fixed;inset:0;z-index:8;pointer-events:none}
+/* Animated gradient overlay */
+.bg-layer::before{
+  content:"";position:absolute;inset:-20%;
+  background:
+    radial-gradient(circle at 25% 20%, rgba(56,189,248,.08), transparent 40%),
+    radial-gradient(circle at 75% 80%, rgba(167,139,250,.06), transparent 45%);
+  animation:bgMove 30s ease-in-out infinite;
+}
+@keyframes bgMove{0%{transform:translate(0,0)}50%{transform:translate(-3%,3%)}100%{transform:translate(0,0)}}
 
-/* ===== TEXT ===== */
+/* Canvas layers - PROPER Z-INDEX ORDER */
+#snow{position:fixed;inset:0;pointer-events:none;z-index:1}
+#characters{position:fixed;inset:0;pointer-events:auto;z-index:2;opacity:1}
+#fireworks{position:fixed;inset:0;pointer-events:none;z-index:8}
+
+/* ========== CONTENT LAYERS ========== */
 .wrap{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  z-index:5;pointer-events:none;
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  z-index:5;transform-style:preserve-3d;transition:transform .12s linear;
+  padding:4vmin;pointer-events:none;
 }
 .line{
-  font-size:clamp(36px,9vw,120px);
-  font-weight:800;
-  text-shadow:0 0 40px rgba(255,255,255,.4);
+  font-size:clamp(38px,9vw,120px);font-weight:800;line-height:1.02;
+  will-change:transform,opacity,text-shadow;
+  transition:opacity .45s ease, transform .45s cubic-bezier(.2,.9,.2,1);
+  opacity:1;
+  text-shadow:0 8px 30px rgba(0,0,0,.8), 0 0 40px rgba(255,255,255,.3);
+  animation:breath 8s ease-in-out infinite, shimmer 6s ease-in-out infinite;
 }
 .sub{
-  margin-top:12px;
-  font-size:clamp(16px,4vw,44px);
-  opacity:.9;
+  font-size:clamp(16px,4.5vw,44px);margin-top:12px;opacity:.95;
+  transition:opacity .45s ease, transform .45s cubic-bezier(.2,.9,.2,1);
+  text-shadow:0 6px 22px rgba(0,0,0,.6), 0 0 30px rgba(255,255,255,.2);
+  animation:shimmer 6s ease-in-out infinite;
+}
+@keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+@keyframes shimmer{0%,100%{text-shadow:0 8px 30px rgba(0,0,0,.8), 0 0 40px rgba(255,255,255,.3)}50%{text-shadow:0 8px 30px rgba(0,0,0,.8), 0 0 60px rgba(255,255,255,.6)}}
+
+/* ========== UI: message / music / countdown ========== */
+.message{
+  position:fixed;left:16px;bottom:16px;width:min(92vw,360px);background:linear-gradient(135deg,#dc2626,#16a34a);
+  border-radius:18px;padding:12px;z-index:10;box-shadow:0 10px 40px rgba(0,0,0,.45);pointer-events:auto;
+}
+.message textarea{width:100%;height:78px;border-radius:12px;border:none;padding:10px;font-size:15px;resize:none;font-family:inherit}
+.message button{margin-top:8px;width:100%;padding:10px;border-radius:12px;border:none;font-weight:700;cursor:pointer;background:#fff;transition:transform .2s}
+.message button:hover{transform:scale(1.05)}
+
+/* music button */
+.music-btn{position:fixed;top:16px;right:16px;width:52px;height:52px;border-radius:50%;border:none;background:rgba(255,255,255,.12);font-size:22px;z-index:20;cursor:pointer;transition:all .3s;pointer-events:auto}
+.music-btn:hover{background:rgba(255,255,255,.2);transform:scale(1.1)}
+
+/* countdown */
+.countdown{position:fixed;right:16px;bottom:16px;width:min(92vw,320px);background:linear-gradient(135deg,#2563eb,#7c3aed,#db2777);border-radius:22px;padding:12px;z-index:20;box-shadow:0 20px 60px rgba(0,0,0,.45);pointer-events:auto}
+.countdown .head{font-size:12px;letter-spacing:2px;text-align:center;opacity:.9;margin-bottom:8px}
+.countdown .time{display:flex;gap:8px;justify-content:center}
+.box{flex:1;background:rgba(0,0,0,.36);padding:8px;border-radius:12px;text-align:center}
+.num{font-size:28px;font-weight:900}
+.label{font-size:11px;opacity:.85}
+
+/* gift box - 3D effect */
+.gift{
+  position:fixed;top:-60px;font-size:40px;z-index:6;cursor:pointer;
+  transition:transform .2s;pointer-events:auto;
+  animation:fall linear infinite;
+}
+.gift:hover{transform:scale(1.2) rotate(10deg)}
+@keyframes fall{to{transform:translateY(110vh) rotate(20deg)}}
+
+/* gift box opening animation */
+.gift-box{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(0);
+  width:200px;height:200px;z-index:40;pointer-events:auto;
+  animation:popIn .4s cubic-bezier(.68,-.55,.27,1.55) forwards;
+}
+@keyframes popIn{to{transform:translate(-50%,-50%) scale(1)}}
+
+.gift-box-base{
+  position:absolute;bottom:0;left:0;right:0;height:140px;
+  background:linear-gradient(135deg,#dc2626,#b91c1c);
+  border-radius:8px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.gift-box-lid{
+  position:absolute;top:0;left:0;right:0;height:70px;
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  border-radius:8px 8px 0 0;
+  transform-origin:bottom;
+  transition:transform .6s cubic-bezier(.68,-.55,.27,1.55);
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+.gift-box.opening .gift-box-lid{
+  transform:rotateX(-120deg) translateY(-20px);
+}
+.gift-box-ribbon-v{
+  position:absolute;top:0;left:50%;width:20px;height:100%;
+  background:linear-gradient(90deg,#fbbf24,#f59e0b);
+  transform:translateX(-50%);
+  z-index:2;
+}
+.gift-box-ribbon-h{
+  position:absolute;top:50%;left:0;width:100%;height:20px;
+  background:linear-gradient(180deg,#fbbf24,#f59e0b);
+  transform:translateY(-50%);
+  z-index:1;
+}
+.gift-box-bow{
+  position:absolute;top:-15px;left:50%;transform:translateX(-50%);
+  font-size:40px;z-index:3;
+  animation:bowBounce 1s ease-in-out infinite;
+}
+@keyframes bowBounce{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.1)}}
+
+.gift-message-container{
+  position:absolute;left:50%;top:55%;
+  transform:translate(-50%,-50%) scale(0);
+  opacity:0;
+  transition:all .5s cubic-bezier(.68,-.55,.27,1.55);
+}
+.gift-box.opening .gift-message-container{
+  transform:translate(-50%,-50%) scale(1);
+  opacity:1;
+  transition-delay:.4s;
+}
+.gift-message{
+  background:#fff;color:#b91c1c;padding:18px 24px;border-radius:16px;
+  font-weight:800;box-shadow:0 20px 60px rgba(0,0,0,.5);
+  max-width:300px;text-align:center;font-size:16px;line-height:1.5;
+}
+.gift-close{
+  position:absolute;top:-40px;right:-40px;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.9);border:none;
+  font-size:20px;cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+  transition:transform .2s;
+}
+.gift-close:hover{transform:scale(1.15)}
+
+/* responsive tweaks */
+@media (max-width:768px){
+  .line{font-size:clamp(32px,12vw,72px)}
+  .sub{font-size:clamp(14px,4.5vw,28px)}
+  .message{left:10px;bottom:10px;width:calc(100% - 20px)}
+  .countdown{right:10px;bottom:10px;width:calc(100% - 20px)}
+  .music-btn{top:10px;right:10px}
+  .message{bottom:120px}
+  .gift-box{width:180px;height:180px}
+  .gift-message{max-width:260px;font-size:14px;padding:16px}
 }
 </style>
 </head>
-
 <body>
+
 <div class="bg-layer"></div>
 
 <canvas id="snow"></canvas>
 <canvas id="characters"></canvas>
 <canvas id="fireworks"></canvas>
 
-<div class="wrap">
-  <div class="line">Merry Christmas ❄️</div>
-  <div class="sub">สุขสันต์วันคริสต์มาส / メリークリスマス</div>
+<audio id="bgm" loop playsinline>
+  <source src="https://cdn.pixabay.com/download/audio/2022/12/14/audio_2f7b3f5b1a.mp3" type="audio/mpeg">
+</audio>
+
+<button class="music-btn" id="musicBtn" aria-label="Toggle music">🎵</button>
+
+<div class="wrap" id="wrap">
+  <div class="line" id="line">Merry Christmas ❄️</div>
+  <div class="sub" id="sub">Wishing you warmth and happiness</div>
+</div>
+
+<div class="message" id="messageBox">
+  <textarea id="msg" placeholder="เขียนข้อความถึงคนพิเศษ… 💖"></textarea>
+  <button id="sendBtn">ส่งข้อความ 💌</button>
+</div>
+
+<div class="countdown" id="countdown">
+  <div class="head" id="countHead">COUNTDOWN TO 2026</div>
+  <div class="time">
+    <div class="box"><div class="num" id="d">00</div><div class="label">DAYS</div></div>
+    <div class="box"><div class="num" id="h">00</div><div class="label">HRS</div></div>
+    <div class="box"><div class="num" id="m">00</div><div class="label">MIN</div></div>
+    <div class="box"><div class="num" id="s">00</div><div class="label">SEC</div></div>
+  </div>
 </div>
 
 <script>
-/* =========================================================
-   CHARACTERS.JS (INLINED) – 144Hz READY
-   ========================================================= */
-(() => {
-'use strict';
+/* =========================================
+   PART 1: MAIN LOGIC (Snow, UI, Gifts, Fireworks)
+   ========================================= */
 
-const canvas = document.getElementById('characters');
-const ctx = canvas.getContext('2d');
+const NY_TARGET = new Date('2026-01-01T00:00:00');
+const XMAS_START = new Date('2025-12-25T00:00:00');
 
-let particles = [];
-let mouseX = -9999, mouseY = -9999;
+const wrap = document.getElementById('wrap');
+const lineEl = document.getElementById('line');
+const subEl = document.getElementById('sub');
 
-/* ===== PIXEL DATA ===== */
-const santaPattern = [
- [0,0,1,1,1,1,1,1,0,0],
- [0,1,2,2,2,2,2,2,1,0],
- [1,2,6,6,6,6,6,6,2,1],
- [1,2,6,6,6,6,6,6,2,1],
- [0,1,7,7,6,6,7,7,1,0],
-];
+/* ========= Persistent Storage (Modified to localStorage) ========= */
+let allMessages = [];
 
-const treePattern = [
- [0,8,0],
- [8,8,8],
- [0,8,0],
- [0,10,0],
-];
+async function loadAllMessages(){
+  try {
+    const result = localStorage.getItem('shared-gift-messages');
+    if(result){
+      allMessages = JSON.parse(result);
+    }
+  } catch(e){
+    allMessages = [];
+  }
+}
 
-const colors = {
- 1:'#fff',2:'#ffe4c4',6:'#dc143c',7:'#333',
- 8:'#228b22',10:'#8b4513'
+async function saveMessage(msg){
+  allMessages.push({
+    text: msg,
+    timestamp: Date.now(),
+    id: Date.now() + '-' + Math.random().toString(36).substr(2,9)
+  });
+  if(allMessages.length > 100){
+    allMessages = allMessages.slice(-100);
+  }
+  try {
+    localStorage.setItem('shared-gift-messages', JSON.stringify(allMessages));
+    return true;
+  } catch(e){
+    console.error('Failed to save message:', e);
+    return false;
+  }
+}
+
+function getRandomMessage(){
+  if(allMessages.length === 0) return null;
+  return allMessages[Math.floor(Math.random() * allMessages.length)];
+}
+
+loadAllMessages();
+
+/* ========= TEXT SETUP ========= */
+const TEXTS = {
+  christmas: {
+    line: ['Merry Christmas ❄️','สุขสันต์วันคริสต์มาส ❄️','メリークリスマス ❄️'],
+    sub: ['Wishing you warmth and happiness','ขอให้มีความสุขและรอยยิ้ม','幸せと温かさを願っています']
+  },
+  newyear: {
+    line: ['Happy New Year 2026 🎆','สวัสดีปีใหม่ 2026 🎆','あけましておめでとうございます 2026 🎆'],
+    sub: ['Welcome to a better year ahead','ขอให้ปี 2026 พบแต่สิ่งที่ดี','2026年が良い年になりますように']
+  }
 };
 
-/* ===== PARTICLE ===== */
-class Particle{
- constructor(tx,ty,color){
-  this.x=Math.random()*canvas.width;
-  this.y=Math.random()*canvas.height;
-  this.tx=tx;this.ty=ty;
-  this.vx=0;this.vy=0;
-  this.color=color;
- }
- update(){
-  this.vx+=(this.tx-this.x)*0.02;
-  this.vy+=(this.ty-this.y)*0.02;
-  this.vx*=0.85;this.vy*=0.85;
-  this.x+=this.vx;this.y+=this.vy;
- }
- draw(){
-  ctx.fillStyle=this.color;
-  ctx.beginPath();
-  ctx.arc(this.x,this.y,4,0,Math.PI*2);
-  ctx.fill();
- }
+let iLine = 0, iSub = 0;
+let prevPhase = null;
+let textInterval = null;
+
+function getPhase(){
+  const t = new Date();
+  if(t >= NY_TARGET) return 'newyear';
+  if(t >= XMAS_START) return 'christmas';
+  return 'christmas';
 }
 
-/* ===== INIT ===== */
-function build(){
- particles=[];
- const size=10;
- santaPattern.forEach((r,y)=>r.forEach((p,x)=>{
-  if(p)particles.push(new Particle(
-    canvas.width*0.3+x*size,
-    canvas.height*0.5+y*size,
-    colors[p]
-  ));
- }));
- treePattern.forEach((r,y)=>r.forEach((p,x)=>{
-  if(p)particles.push(new Particle(
-    canvas.width*0.7+x*size,
-    canvas.height*0.5+y*size,
-    colors[p]
-  ));
- }));
+function updateTexts(){
+  const phase = getPhase();
+
+  if(phase !== prevPhase){
+    prevPhase = phase;
+    iLine = 0;
+    iSub = 0;
+
+    if(phase === 'newyear'){
+      const first = TEXTS.newyear;
+      lineEl.textContent = first.line[0];
+      subEl.textContent = first.sub[0];
+      iLine = 1; 
+      iSub = 1;
+      startNewYear();
+      return;
+    }
+  }
+
+  const data = TEXTS[phase];
+  const newLine = data.line[iLine % data.line.length];
+  const newSub = data.sub[iSub % data.sub.length];
+
+  lineEl.style.opacity = '0';
+  subEl.style.opacity = '0';
+
+  setTimeout(()=>{
+    lineEl.textContent = newLine;
+    subEl.textContent = newSub;
+    lineEl.style.opacity = '1';
+    subEl.style.opacity = '1';
+    iLine++; 
+    iSub++;
+  }, 300);
 }
 
-function resize(){
- canvas.width=innerWidth;
- canvas.height=innerHeight;
- build();
+updateTexts();
+textInterval = setInterval(updateTexts, 5000);
+
+/* ========= Countdown ========= */
+const elD = document.getElementById('d');
+const elH = document.getElementById('h');
+const elM = document.getElementById('m');
+const elS = document.getElementById('s');
+const countHead = document.getElementById('countHead');
+
+function tick(){
+  const now = new Date();
+  const diff = NY_TARGET - now;
+  
+  if(diff <= 0){
+    countHead.textContent = '🎆 HAPPY NEW YEAR 2026 🎆';
+    elD.textContent = '00';
+    elH.textContent = '00';
+    elM.textContent = '00';
+    elS.textContent = '00';
+    startNewYear();
+    return;
+  }
+  
+  const days = Math.floor(diff/86400000);
+  const hours = Math.floor((diff%86400000)/3600000);
+  const mins = Math.floor((diff%3600000)/60000);
+  const secs = Math.floor((diff%60000)/1000);
+  
+  elD.textContent = String(days).padStart(2,'0');
+  elH.textContent = String(hours).padStart(2,'0');
+  elM.textContent = String(mins).padStart(2,'0');
+  elS.textContent = String(secs).padStart(2,'0');
 }
-window.addEventListener('resize',resize);
 
-/* ===== MAIN LOOP (144Hz READY) ===== */
-function loop(){
- ctx.clearRect(0,0,canvas.width,canvas.height);
- particles.forEach(p=>{p.update();p.draw()});
- requestAnimationFrame(loop);
+let countdownInterval = setInterval(tick, 1000);
+tick();
+
+/* ========= Music control ========= */
+const bgm = document.getElementById('bgm');
+const musicBtn = document.getElementById('musicBtn');
+
+musicBtn.addEventListener('click', ()=>{ 
+  if(bgm.paused){
+    bgm.play().catch(e => console.log('Audio play failed:', e));
+    musicBtn.textContent = '⏸️';
+  } else {
+    bgm.pause();
+    musicBtn.textContent = '🎵';
+  }
+});
+
+/* ========= Message & Gifts ========= */
+let myMessage = '';
+
+document.getElementById('sendBtn').addEventListener('click', async ()=>{ 
+  const msgInput = document.getElementById('msg');
+  const text = msgInput.value.trim();
+  
+  if(text){ 
+    myMessage = text;
+    const saved = await saveMessage(text);
+    if(saved){
+      showToast('ข้อความถูกบันทึกแล้ว 💌');
+      await loadAllMessages();
+    } else {
+      showToast('ข้อความถูกบันทึกในเครื่องแล้ว 💌');
+    }
+    msgInput.value = '';
+  } else {
+    showToast('กรุณาพิมพ์ข้อความก่อนนะครับ');
+  }
+});
+
+function showToast(txt){
+  const t = document.createElement('div');
+  t.textContent = txt;
+  Object.assign(t.style,{
+    position:'fixed',
+    left:'50%',
+    top:'20%',
+    transform:'translateX(-50%)',
+    background:'rgba(0,0,0,.85)',
+    color:'#fff',
+    padding:'12px 18px',
+    borderRadius:'12px',
+    zIndex:'60',
+    fontSize:'14px',
+    boxShadow:'0 4px 20px rgba(0,0,0,.3)',
+    pointerEvents:'auto'
+  });
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2200);
 }
 
-resize();
-loop();
+let giftInterval = setInterval(()=>{
+  const g = document.createElement('div');
+  g.className = 'gift';
+  g.textContent = '🎁';
+  const dur = 7 + Math.random()*5;
+  g.style.left = Math.random()*85 + 7 + 'vw';
+  g.style.animationDuration = dur + 's';
+  
+  g.addEventListener('click', ()=>{
+    const msg = getRandomMessage();
+    if(!msg){
+      showToast('ยังไม่มีข้อความในกล่องของขวัญ ลองเขียนข้อความแล้วกดส่งดูนะครับ 💝');
+      return;
+    }
+    openGiftBox(msg.text);
+    g.remove();
+  });
+  
+  document.body.appendChild(g);
+  setTimeout(()=>g.remove(), (dur*1000)+200);
+}, 1800);
 
-console.log('🎅 Characters running @ native refresh rate');
+function openGiftBox(text){
+  const container = document.createElement('div');
+  container.className = 'gift-box';
+  container.innerHTML = `
+    <div class="gift-box-lid">
+      <div class="gift-box-bow">🎀</div>
+    </div>
+    <div class="gift-box-ribbon-v"></div>
+    <div class="gift-box-ribbon-h"></div>
+    <div class="gift-box-base"></div>
+    <div class="gift-message-container">
+      <div class="gift-message">${text}</div>
+      <button class="gift-close">✕</button>
+    </div>
+  `;
+  
+  document.body.appendChild(container);
+  
+  for(let i=0; i<25; i++){
+    const p = document.createElement('div');
+    p.textContent = '✨';
+    Object.assign(p.style,{
+      position:'fixed',
+      left:'50%',
+      top:'50%',
+      transform:'translate(-50%,-50%)',
+      fontSize:'20px',
+      pointerEvents:'none',
+      zIndex:'55'
+    });
+    document.body.appendChild(p);
+    
+    const angle = (Math.PI * 2 * i) / 25;
+    const dist = 100 + Math.random()*80;
+    
+    p.animate([
+      {transform:'translate(-50%,-50%) scale(1)', opacity:1},
+      {transform:`translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(0.2)`, opacity:0}
+    ], {duration:1200, easing:'cubic-bezier(.2,.8,.2,1)'});
+    
+    setTimeout(()=>p.remove(), 1200);
+  }
+  
+  setTimeout(()=>{
+    container.classList.add('opening');
+  }, 400);
+  
+  const closeBtn = container.querySelector('.gift-close');
+  closeBtn.addEventListener('click', ()=>{
+    container.style.transform = 'translate(-50%,-50%) scale(0)';
+    container.style.opacity = '0';
+    setTimeout(()=>container.remove(), 300);
+  });
+  
+  setTimeout(()=>{
+    if(document.body.contains(container)){
+      container.style.transform = 'translate(-50%,-50%) scale(0)';
+      container.style.opacity = '0';
+      setTimeout(()=>container.remove(), 300);
+    }
+  }, 8000);
+}
+
+/* ========= Snow Canvas ========= */
+const snowC = document.getElementById('snow');
+const snowCtx = snowC.getContext('2d');
+let flakes = [];
+
+function resizeSnow(){ 
+  snowC.width = window.innerWidth;
+  snowC.height = window.innerHeight;
+}
+
+function initFlakes(){
+  const count = window.innerWidth < 768 ? 80 : 140;
+  flakes = [];
+  for(let i=0; i<count; i++){
+    flakes.push({
+      x: Math.random() * snowC.width,
+      y: Math.random() * snowC.height,
+      r: Math.random() * 2.5 + 1,
+      s: Math.random() * 0.5 + 0.3,
+      drift: Math.random() * 0.3 - 0.15
+    });
+  }
+}
+
+resizeSnow();
+initFlakes();
+
+window.addEventListener('resize', ()=>{ 
+  resizeSnow();
+  initFlakes();
+});
+
+function snowLoop(){
+  snowCtx.clearRect(0, 0, snowC.width, snowC.height);
+  snowCtx.fillStyle = 'rgba(255,255,255,0.75)';
+  
+  flakes.forEach(f=>{
+    snowCtx.beginPath();
+    snowCtx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+    snowCtx.fill();
+    
+    f.y += f.s;
+    f.x += f.drift;
+    
+    if(f.y > snowC.height){
+      f.y = -10;
+      f.x = Math.random() * snowC.width;
+    }
+    if(f.x < 0) f.x = snowC.width;
+    if(f.x > snowC.width) f.x = 0;
+  });
+  
+  requestAnimationFrame(snowLoop);
+}
+
+snowLoop();
+
+/* ========= Fireworks Canvas ========= */
+const fwC = document.getElementById('fireworks');
+const fwCtx = fwC.getContext('2d');
+let fwParticles = [];
+let fwInterval = null;
+
+function resizeFW(){ 
+  fwC.width = window.innerWidth;
+  fwC.height = window.innerHeight;
+}
+
+resizeFW();
+window.addEventListener('resize', resizeFW);
+
+function spawnFirework(x, y){
+  const cx = x !== undefined ? x : Math.random() * fwC.width;
+  const cy = y !== undefined ? y : Math.random() * fwC.height * 0.5;
+  const colors = ['#ff4d4d','#facc15','#22d3ee','#a78bfa','#fb7185','#34d399','#ff9f43'];
+  const count = 80 + Math.floor(Math.random() * 40);
+  
+  for(let i=0; i<count; i++){
+    fwParticles.push({
+      x: cx,
+      y: cy,
+      vx: (Math.random() - 0.5) * 7,
+      vy: (Math.random() - 0.7) * 7,
+      life: 60 + Math.floor(Math.random() * 40),
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: 2 + Math.random() * 2
+    });
+  }
+}
+
+function startFireworksRepeat(){ 
+  if(fwInterval) return;
+  fwInterval = setInterval(()=>spawnFirework(), 800);
+}
+
+function fwLoop(){
+  fwCtx.clearRect(0, 0, fwC.width, fwC.height);
+  
+  for(let i = fwParticles.length - 1; i >= 0; i--){
+    const p = fwParticles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.05;
+    p.life--;
+    
+    const alpha = p.life / 100;
+    fwCtx.fillStyle = p.color;
+    fwCtx.globalAlpha = alpha;
+    fwCtx.beginPath();
+    fwCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    fwCtx.fill();
+    
+    if(p.life <= 0){
+      fwParticles.splice(i, 1);
+    }
+  }
+  
+  fwCtx.globalAlpha = 1;
+  requestAnimationFrame(fwLoop);
+}
+
+fwLoop();
+
+/* ========= New Year Celebration ========= */
+let newYearActivated = false;
+
+function startNewYear(){
+  if(newYearActivated) return;
+  newYearActivated = true;
+  
+  startFireworksRepeat();
+  
+  wrap.animate([
+    {filter:'brightness(1)'},
+    {filter:'brightness(1.4)'},
+    {filter:'brightness(1)'}
+  ], {duration:1500, iterations:1, easing:'ease-out'});
+  
+  for(let i=0; i<10; i++){
+    setTimeout(()=>spawnFirework(), i * 100);
+  }
+}
+
+/* ========= Tilt Effect ========= */
+function applyTilt(rx, ry){ 
+  wrap.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+}
+
+window.addEventListener('mousemove', e=>{
+  const rx = (e.clientY / window.innerHeight - 0.5) * 6;
+  const ry = (e.clientX / window.innerWidth - 0.5) * -6;
+  applyTilt(rx, ry);
+});
+
+window.addEventListener('touchmove', e=>{
+  if(e.touches.length > 0){
+    const t = e.touches[0];
+    const rx = (t.clientY / window.innerHeight - 0.5) * 6;
+    const ry = (t.clientX / window.innerWidth - 0.5) * -6;
+    applyTilt(rx, ry);
+  }
+}, {passive: true});
+
+if(window.DeviceOrientationEvent){
+  window.addEventListener('deviceorientation', e=>{
+    if(e.beta !== null && e.gamma !== null){
+      const rx = Math.max(-12, Math.min(12, e.beta / 4));
+      const ry = Math.max(-12, Math.min(12, e.gamma / 4));
+      applyTilt(rx, ry);
+    }
+  });
+}
+
+/* ========= Cleanup ========= */
+window.addEventListener('beforeunload', ()=>{
+  if(textInterval) clearInterval(textInterval);
+  if(countdownInterval) clearInterval(countdownInterval);
+  if(giftInterval) clearInterval(giftInterval);
+  if(fwInterval) clearInterval(fwInterval);
+});
+
+console.log('🎄 Merry Christmas & Happy New Year! 🎆');
+
+/* =========================================
+   PART 2: CHARACTER ANIMATION (Santa & Tree)
+   ========================================= */
+
+(function() {
+  'use strict';
+
+  const canvas = document.getElementById('characters');
+  if (!canvas) {
+    console.error('Canvas #characters not found!');
+    return;
+  }
+
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let animationId = null;
+  let mouseX = -9999;
+  let mouseY = -9999;
+
+  // Santa Claus pixel art (bigger and more detailed)
+  const santaPattern = [
+    [0,0,0,0,1,1,1,1,1,1,0,0,0,0],
+    [0,0,0,1,1,1,1,1,1,1,1,0,0,0],
+    [0,0,1,2,2,2,2,2,2,2,2,1,0,0],
+    [0,1,2,2,2,2,2,2,2,2,2,2,1,0],
+    [0,1,2,3,3,2,2,2,2,3,3,2,1,0],
+    [0,1,2,3,3,2,2,2,2,3,3,2,1,0],
+    [0,1,2,2,2,4,2,2,4,2,2,2,1,0],
+    [0,1,2,2,2,2,2,2,2,2,2,2,1,0],
+    [0,0,1,2,2,5,5,5,5,2,2,1,0,0],
+    [0,0,0,1,1,5,5,5,5,1,1,0,0,0],
+    [0,0,1,1,1,1,5,5,1,1,1,1,0,0],
+    [0,1,6,6,6,6,6,6,6,6,6,6,1,0],
+    [1,6,6,6,6,6,6,6,6,6,6,6,6,1],
+    [1,6,6,6,6,6,6,6,6,6,6,6,6,1],
+    [1,6,6,6,6,6,6,6,6,6,6,6,6,1],
+    [0,1,6,6,6,6,6,6,6,6,6,6,1,0],
+    [0,0,1,7,7,6,6,6,6,7,7,1,0,0],
+    [0,0,0,1,7,7,1,1,7,7,1,0,0,0],
+    [0,0,0,1,7,7,1,1,7,7,1,0,0,0],
+    [0,0,0,0,1,1,0,0,1,1,0,0,0,0],
+  ];
+
+  // Christmas Tree pixel art (bigger)
+  const treePattern = [
+    [0,0,0,0,0,8,8,0,0,0,0,0],
+    [0,0,0,0,8,8,8,8,0,0,0,0],
+    [0,0,0,8,8,8,8,8,8,0,0,0],
+    [0,0,8,8,8,9,8,8,8,8,0,0],
+    [0,8,8,8,8,8,8,8,8,8,8,0],
+    [8,8,8,9,8,8,8,9,8,8,8,8],
+    [0,0,8,8,8,8,8,8,8,8,0,0],
+    [0,8,8,8,8,9,8,8,8,8,8,0],
+    [8,8,8,8,8,8,8,8,8,8,8,8],
+    [0,8,8,8,8,8,8,8,8,8,8,0],
+    [0,0,8,8,9,8,8,9,8,8,0,0],
+    [0,8,8,8,8,8,8,8,8,8,8,0],
+    [8,8,8,9,8,8,8,8,9,8,8,8],
+    [0,8,8,8,8,8,8,8,8,8,8,0],
+    [0,0,0,10,10,10,10,10,0,0,0],
+    [0,0,0,10,10,10,10,10,0,0,0],
+    [0,0,0,10,10,10,10,10,0,0,0],
+  ];
+
+  // Enhanced color palette with glow
+  const colors = {
+    0: 'transparent',
+    1: '#FFFFFF',   // white outline/beard
+    2: '#FFE4C4',   // skin tone
+    3: '#1A1A1A',   // eyes
+    4: '#FF69B4',   // rosy cheeks
+    5: '#C41E3A',   // mouth/nose
+    6: '#DC143C',   // santa suit red
+    7: '#2C2C2C',   // boots/belt
+    8: '#228B22',   // tree green
+    9: '#FFD700',   // gold ornaments
+    10: '#8B4513',  // brown trunk
+  };
+
+  // Glow colors for particles
+  const glowColors = {
+    1: 'rgba(255,255,255,0.8)',
+    2: 'rgba(255,228,196,0.6)',
+    3: 'rgba(26,26,26,0.5)',
+    4: 'rgba(255,105,180,0.7)',
+    5: 'rgba(196,30,58,0.6)',
+    6: 'rgba(220,20,60,0.8)',
+    7: 'rgba(44,44,44,0.5)',
+    8: 'rgba(34,139,34,0.7)',
+    9: 'rgba(255,215,0,0.9)',
+    10: 'rgba(139,69,19,0.6)',
+  };
+
+  // Particle class
+  class Particle {
+    constructor(targetX, targetY, color, colorIndex, size) {
+      // Random starting position (scattered)
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      
+      this.targetX = targetX;
+      this.targetY = targetY;
+      this.color = color;
+      this.colorIndex = colorIndex;
+      this.size = size;
+      
+      // Velocity
+      this.vx = 0;
+      this.vy = 0;
+      
+      // Drift animation (like drones)
+      this.driftAngle = Math.random() * Math.PI * 2;
+      this.driftSpeed = 0.3 + Math.random() * 0.3;
+      this.driftRadius = 2 + Math.random() * 3;
+      
+      // Individual timing offset
+      this.timeOffset = Math.random() * 1000;
+      
+      // Original target for drift calculation
+      this.baseX = targetX;
+      this.baseY = targetY;
+    }
+
+    update(time, mouseX, mouseY) {
+      // Calculate drift position (circular motion like drone hovering)
+      const driftX = Math.cos(time * 0.001 * this.driftSpeed + this.timeOffset) * this.driftRadius;
+      const driftY = Math.sin(time * 0.001 * this.driftSpeed + this.timeOffset) * this.driftRadius;
+      
+      // Update target with drift
+      const currentTargetX = this.baseX + driftX;
+      const currentTargetY = this.baseY + driftY;
+      
+      // Calculate distance to target
+      let dx = currentTargetX - this.x;
+      let dy = currentTargetY - this.y;
+      
+      // Mouse interaction - repel particles
+      const mouseDistX = mouseX - this.x;
+      const mouseDistY = mouseY - this.y;
+      const mouseDist = Math.sqrt(mouseDistX * mouseDistX + mouseDistY * mouseDistY);
+      const repelRadius = 120;
+      
+      if (mouseDist < repelRadius && mouseDist > 0) {
+        const repelForce = (1 - mouseDist / repelRadius) * 8;
+        dx -= (mouseDistX / mouseDist) * repelForce;
+        dy -= (mouseDistY / mouseDist) * repelForce;
+      }
+      
+      // Spring physics (smooth drone-like movement)
+      const spring = 0.018;
+      const friction = 0.88;
+      
+      this.vx += dx * spring;
+      this.vy += dy * spring;
+      
+      this.vx *= friction;
+      this.vy *= friction;
+      
+      this.x += this.vx;
+      this.y += this.vy;
+    }
+
+    draw(ctx, time) {
+      // Breathing effect on size
+      const breathe = 1 + Math.sin(time * 0.002 + this.timeOffset) * 0.08;
+      const currentSize = this.size * breathe;
+      
+      // Enhanced glow effect
+      const glowSize = currentSize * 3;
+      const gradient = ctx.createRadialGradient(
+        this.x, this.y, 0,
+        this.x, this.y, glowSize
+      );
+      
+      gradient.addColorStop(0, this.color);
+      gradient.addColorStop(0.4, glowColors[this.colorIndex] || this.color);
+      gradient.addColorStop(1, 'rgba(0,0,0,0)');
+      
+      // Draw glow
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, glowSize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Draw core particle
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, currentSize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Extra bright center
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, currentSize * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Initialize particles from patterns
+  function initParticles() {
+    particles = [];
+    
+    const particleSize = window.innerWidth < 768 ? 4 : 6;
+    const spacing = window.innerWidth < 768 ? 2 : 2.5;
+    
+    // Santa position (left side)
+    const santaX = window.innerWidth * 0.25;
+    const santaY = window.innerHeight * 0.5;
+    const santaScale = window.innerWidth < 768 ? 3 : 4;
+    
+    santaPattern.forEach((row, y) => {
+      row.forEach((pixel, x) => {
+        if (pixel !== 0) {
+          const targetX = santaX + (x - santaPattern[0].length / 2) * particleSize * spacing * santaScale;
+          const targetY = santaY + (y - santaPattern.length / 2) * particleSize * spacing * santaScale;
+          
+          particles.push(new Particle(
+            targetX,
+            targetY,
+            colors[pixel],
+            pixel,
+            particleSize
+          ));
+        }
+      });
+    });
+    
+    // Tree position (right side)
+    const treeX = window.innerWidth * 0.75;
+    const treeY = window.innerHeight * 0.5;
+    const treeScale = window.innerWidth < 768 ? 3.5 : 5;
+    
+    treePattern.forEach((row, y) => {
+      row.forEach((pixel, x) => {
+        if (pixel !== 0) {
+          const targetX = treeX + (x - treePattern[0].length / 2) * particleSize * spacing * treeScale;
+          const targetY = treeY + (y - treePattern.length / 2) * particleSize * spacing * treeScale;
+          
+          particles.push(new Particle(
+            targetX,
+            targetY,
+            colors[pixel],
+            pixel,
+            particleSize
+          ));
+        }
+      });
+    });
+  }
+
+  // Resize canvas
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initParticles();
+  }
+
+  // Animation loop
+  function animate() {
+    const time = Date.now();
+    
+    // Clear with slight trail effect for smooth motion
+    ctx.fillStyle = 'rgba(0,0,0,0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Update and draw all particles
+    particles.forEach(particle => {
+      particle.update(time, mouseX, mouseY);
+      particle.draw(ctx, time);
+    });
+    
+    animationId = requestAnimationFrame(animate);
+  }
+
+  // Mouse tracking
+  window.addEventListener('mousemove', (e) => {
+    // ปรับ event ให้รับจาก window แทน canvas เพื่อให้ interaction กว้างขึ้น
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  window.addEventListener('mouseleave', () => {
+    mouseX = -9999;
+    mouseY = -9999;
+  });
+
+  // Touch support
+  window.addEventListener('touchmove', (e) => {
+    // ปรับให้ไม่ preventDefault ทั้งหมดเพื่อให้กดปุ่มอื่นได้
+    if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA'){
+        // e.preventDefault(); 
+    }
+    const touch = e.touches[0];
+    mouseX = touch.clientX;
+    mouseY = touch.clientY;
+  }, { passive: false });
+
+  window.addEventListener('touchend', () => {
+    mouseX = -9999;
+    mouseY = -9999;
+  });
+
+  // Window resize
+  window.addEventListener('resize', resizeCanvas);
+
+  // Initialize
+  resizeCanvas();
+  animate();
+
+  console.log('🎅 Santa & 🎄 Tree characters loaded!');
+
 })();
 </script>
-
 </body>
 </html>
