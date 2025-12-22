@@ -8,26 +8,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:700&family=Noto+Sans+Thai:700&family=Noto+Sans+JP:700&display=swap" rel="stylesheet">
 
 <style>
-/* ===== RESET ===== */
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%}
 
-/* ===== BASE ===== */
 body{
   background:radial-gradient(circle at top,#0f172a,#020617 70%);
-  color:#fff;
   font-family:'Noto Sans','Noto Sans Thai','Noto Sans JP',system-ui;
+  color:#fff;
   overflow:hidden;
 }
 
-/* ===== NEW YEAR MODE ===== */
-body.newyear{
-  background:radial-gradient(circle at center,#020617,#000);
-  animation:glow 6s ease-in-out infinite;
+/* ===== BACKGROUND LIFE ===== */
+body::before{
+  content:'';
+  position:fixed;
+  inset:-20%;
+  background:
+    radial-gradient(circle at 30% 20%,rgba(255,255,255,.08),transparent 40%),
+    radial-gradient(circle at 70% 80%,rgba(255,255,255,.06),transparent 45%);
+  animation:bgMove 20s linear infinite;
 }
-@keyframes glow{
-  0%,100%{filter:brightness(1)}
-  50%{filter:brightness(1.15)}
+@keyframes bgMove{
+  0%{transform:translate(0,0)}
+  50%{transform:translate(-5%,5%)}
+  100%{transform:translate(0,0)}
 }
 
 /* ===== CANVAS ===== */
@@ -49,33 +53,34 @@ canvas{
   text-align:center;
   z-index:2;
 }
+
 .line{
-  font-size:clamp(42px,8vw,130px);
+  font-size:clamp(48px,9vw,140px);
   font-weight:800;
-  opacity:0;
-  transform:translateY(20px);
-  filter:blur(6px);
-  transition:all .9s ease;
-}
-.sub{
-  font-size:clamp(20px,4.5vw,72px);
-  margin-top:12px;
-  opacity:0;
-  transform:translateY(20px);
-  filter:blur(6px);
-  transition:all 1.05s ease;
-}
-.show .line,.show .sub{
-  opacity:1;
-  transform:none;
-  filter:none;
+  animation:breathe 6s ease-in-out infinite, shimmer 4s ease-in-out infinite;
 }
 
-/* ===== MESSAGE BOX ===== */
+.sub{
+  font-size:clamp(22px,4.5vw,72px);
+  margin-top:14px;
+  animation:shimmer 5s ease-in-out infinite;
+}
+
+@keyframes breathe{
+  0%,100%{transform:scale(1);letter-spacing:.04em}
+  50%{transform:scale(1.05);letter-spacing:.09em}
+}
+
+@keyframes shimmer{
+  0%,100%{text-shadow:0 0 20px rgba(255,255,255,.3)}
+  50%{text-shadow:0 0 50px rgba(255,255,255,.7)}
+}
+
+/* ===== MESSAGE ===== */
 .message{
   position:fixed;
-  bottom:20px;
   left:20px;
+  bottom:20px;
   width:300px;
   background:linear-gradient(135deg,#dc2626,#16a34a);
   border-radius:20px;
@@ -95,7 +100,6 @@ canvas{
   padding:8px;
   border:none;
   border-radius:12px;
-  background:#fff;
   font-weight:700;
   cursor:pointer;
 }
@@ -109,11 +113,13 @@ canvas{
   padding:18px 22px;
   border-radius:24px;
   z-index:25;
+  animation:pulse 2.5s ease-in-out infinite;
 }
-.time{
-  display:flex;
-  gap:10px;
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.06)}
 }
+.time{display:flex;gap:10px}
 .box{
   background:rgba(0,0,0,.35);
   border-radius:14px;
@@ -121,7 +127,15 @@ canvas{
   min-width:60px;
   text-align:center;
 }
-.num{font-size:34px;font-weight:900}
+.num{
+  font-size:34px;
+  font-weight:900;
+  animation:digitGlow 1.5s ease-in-out infinite alternate;
+}
+@keyframes digitGlow{
+  from{text-shadow:0 0 10px rgba(255,255,255,.4)}
+  to{text-shadow:0 0 25px rgba(255,255,255,.9)}
+}
 .label{font-size:11px;opacity:.8}
 
 /* ===== GIFTS ===== */
@@ -142,7 +156,7 @@ canvas{
   transform:translate(-50%,-50%);
   background:#fff;
   color:#b91c1c;
-  padding:20px 24px;
+  padding:22px 26px;
   border-radius:20px;
   font-size:22px;
   font-weight:800;
@@ -184,7 +198,7 @@ canvas{
 </audio>
 <button class="music-btn" id="musicBtn">🎵</button>
 
-<div class="wrap show" id="wrap">
+<div class="wrap" id="wrap">
   <div class="line" id="line">Coming Soon!</div>
   <div class="sub" id="sub">Merry Christmas ❄️</div>
 </div>
@@ -194,7 +208,7 @@ canvas{
   <button onclick="sendMsg()">ส่งข้อความ 💌</button>
 </div>
 
-<div class="countdown" id="countdown">
+<div class="countdown">
   <div class="time">
     <div class="box"><div class="num" id="d">00</div><div class="label">DAYS</div></div>
     <div class="box"><div class="num" id="h">00</div><div class="label">HRS</div></div>
@@ -204,16 +218,62 @@ canvas{
 </div>
 
 <script>
-/* ===== TEXT ROTATION ===== */
-const texts=[
-  ['Coming Soon!','Merry Christmas ❄️'],
-  ['Coming Soon!','สุขสันต์วันคริสต์มาส ❄️'],
-  ['Coming Soon!','メリークリスマス ❄️']
-];
-let ti=0;
+/* ===== MESSAGE ===== */
+let saved='';
+function sendMsg(){saved=document.getElementById('msg').value.trim()}
+
+/* ===== GIFTS ===== */
 setInterval(()=>{
-  const wrap=document.getElementById('wrap');
-  wrap.classList.remove('show');
-  setTimeout(()=>{
-    document.getElementById('line').textContent=texts[ti][0];
-    document.getElement
+  const g=document.createElement('div');
+  g.className='gift';
+  g.textContent='🎁';
+  g.style.left=Math.random()*100+'vw';
+  g.onclick=()=>{
+    if(!saved)return;
+    const b=document.createElement('div');
+    b.className='gift-message';
+    b.textContent=saved;
+    document.body.appendChild(b);
+    setTimeout(()=>b.remove(),5000);
+  };
+  document.body.appendChild(g);
+  setTimeout(()=>g.remove(),6000);
+},900);
+
+/* ===== COUNTDOWN ===== */
+function update(){
+  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Bangkok'}));
+  const target=new Date('2026-01-01T00:00:00+07:00');
+  const diff=target-now;
+  if(diff<=0){
+    document.getElementById('line').textContent='Happy New Year 2026 🎆';
+    document.getElementById('sub').textContent='สวัสดีปีใหม่ 2026';
+    return;
+  }
+  d.textContent=Math.floor(diff/86400000);
+  h.textContent=Math.floor(diff%86400000/3600000);
+  m.textContent=Math.floor(diff%3600000/60000);
+  s.textContent=Math.floor(diff%60000/1000);
+}
+setInterval(update,1000);update();
+
+/* ===== MUSIC ===== */
+musicBtn.onclick=()=>bgm.paused?bgm.play():bgm.pause();
+
+/* ===== SNOW ===== */
+const snow=document.getElementById('snow'),ctx=snow.getContext('2d');
+function resize(){snow.width=innerWidth;snow.height=innerHeight}
+resize();addEventListener('resize',resize);
+const flakes=[...Array(200)].map(()=>({x:Math.random()*snow.width,y:Math.random()*snow.height,r:Math.random()*3+1,s:Math.random()+.5}));
+(function draw(){
+  ctx.clearRect(0,0,snow.width,snow.height);
+  flakes.forEach(f=>{
+    ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+    ctx.fillStyle='white';ctx.fill();
+    f.y+=f.s;if(f.y>snow.height)f.y=0;
+  });
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
