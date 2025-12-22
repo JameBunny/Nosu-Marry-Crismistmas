@@ -11,65 +11,70 @@
 html,body{width:100%;height:100%}
 body{
   font-family:'Noto Sans','Noto Sans Thai','Noto Sans JP',system-ui;
-  background:radial-gradient(circle at top,#0f172a,#020617 70%);
+  background:#000;
   color:#fff;overflow:hidden;
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-/* subtle moving background */
-body::before{
-  content:"";position:fixed;inset:-20%;
+/* Dark gradient background */
+.bg-layer{
+  position:fixed;inset:0;z-index:0;
+  background:radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a15 100%);
+}
+
+/* Animated gradient overlay */
+.bg-layer::before{
+  content:"";position:absolute;inset:-20%;
   background:
-    radial-gradient(circle at 25% 20%, rgba(255,255,255,.06), transparent 40%),
-    radial-gradient(circle at 75% 80%, rgba(255,255,255,.04), transparent 45%);
-  z-index:0;pointer-events:none;
+    radial-gradient(circle at 25% 20%, rgba(56,189,248,.08), transparent 40%),
+    radial-gradient(circle at 75% 80%, rgba(167,139,250,.06), transparent 45%);
   animation:bgMove 30s ease-in-out infinite;
 }
 @keyframes bgMove{0%{transform:translate(0,0)}50%{transform:translate(-3%,3%)}100%{transform:translate(0,0)}}
 
-/* Canvas layers */
+/* Canvas layers - PROPER Z-INDEX ORDER */
 #snow{position:fixed;inset:0;pointer-events:none;z-index:1}
-#characters{position:fixed;inset:0;pointer-events:auto;z-index:2}
+#characters{position:fixed;inset:0;pointer-events:auto;z-index:2;opacity:1}
 #fireworks{position:fixed;inset:0;pointer-events:none;z-index:8}
 
 /* ========== CONTENT LAYERS ========== */
 .wrap{
   position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
   z-index:5;transform-style:preserve-3d;transition:transform .12s linear;
-  padding:4vmin;
+  padding:4vmin;pointer-events:none;
 }
 .line{
   font-size:clamp(38px,9vw,120px);font-weight:800;line-height:1.02;
   will-change:transform,opacity,text-shadow;
   transition:opacity .45s ease, transform .45s cubic-bezier(.2,.9,.2,1);
   opacity:1;
-  text-shadow:0 8px 30px rgba(0,0,0,.55);
+  text-shadow:0 8px 30px rgba(0,0,0,.8), 0 0 40px rgba(255,255,255,.3);
   animation:breath 8s ease-in-out infinite, shimmer 6s ease-in-out infinite;
 }
 .sub{
   font-size:clamp(16px,4.5vw,44px);margin-top:12px;opacity:.95;
   transition:opacity .45s ease, transform .45s cubic-bezier(.2,.9,.2,1);
-  text-shadow:0 6px 22px rgba(0,0,0,.45);
+  text-shadow:0 6px 22px rgba(0,0,0,.6), 0 0 30px rgba(255,255,255,.2);
   animation:shimmer 6s ease-in-out infinite;
 }
 @keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-@keyframes shimmer{0%,100%{text-shadow:0 0 20px rgba(255,255,255,.18)}50%{text-shadow:0 0 35px rgba(255,255,255,.5)}}
+@keyframes shimmer{0%,100%{text-shadow:0 8px 30px rgba(0,0,0,.8), 0 0 40px rgba(255,255,255,.3)}50%{text-shadow:0 8px 30px rgba(0,0,0,.8), 0 0 60px rgba(255,255,255,.6)}}
 
 /* ========== UI: message / music / countdown ========== */
 .message{
   position:fixed;left:16px;bottom:16px;width:min(92vw,360px);background:linear-gradient(135deg,#dc2626,#16a34a);
-  border-radius:18px;padding:12px;z-index:10;box-shadow:0 10px 40px rgba(0,0,0,.45)
+  border-radius:18px;padding:12px;z-index:10;box-shadow:0 10px 40px rgba(0,0,0,.45);pointer-events:auto;
 }
 .message textarea{width:100%;height:78px;border-radius:12px;border:none;padding:10px;font-size:15px;resize:none;font-family:inherit}
 .message button{margin-top:8px;width:100%;padding:10px;border-radius:12px;border:none;font-weight:700;cursor:pointer;background:#fff;transition:transform .2s}
 .message button:hover{transform:scale(1.05)}
 
 /* music button */
-.music-btn{position:fixed;top:16px;right:16px;width:52px;height:52px;border-radius:50%;border:none;background:rgba(255,255,255,.12);font-size:22px;z-index:20;cursor:pointer;transition:all .3s}
+.music-btn{position:fixed;top:16px;right:16px;width:52px;height:52px;border-radius:50%;border:none;background:rgba(255,255,255,.12);font-size:22px;z-index:20;cursor:pointer;transition:all .3s;pointer-events:auto}
 .music-btn:hover{background:rgba(255,255,255,.2);transform:scale(1.1)}
 
 /* countdown */
-.countdown{position:fixed;right:16px;bottom:16px;width:min(92vw,320px);background:linear-gradient(135deg,#2563eb,#7c3aed,#db2777);border-radius:22px;padding:12px;z-index:20;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.countdown{position:fixed;right:16px;bottom:16px;width:min(92vw,320px);background:linear-gradient(135deg,#2563eb,#7c3aed,#db2777);border-radius:22px;padding:12px;z-index:20;box-shadow:0 20px 60px rgba(0,0,0,.45);pointer-events:auto}
 .countdown .head{font-size:12px;letter-spacing:2px;text-align:center;opacity:.9;margin-bottom:8px}
 .countdown .time{display:flex;gap:8px;justify-content:center}
 .box{flex:1;background:rgba(0,0,0,.36);padding:8px;border-radius:12px;text-align:center}
@@ -79,7 +84,7 @@ body::before{
 /* gift box - 3D effect */
 .gift{
   position:fixed;top:-60px;font-size:40px;z-index:6;cursor:pointer;
-  transition:transform .2s;
+  transition:transform .2s;pointer-events:auto;
   animation:fall linear infinite;
 }
 .gift:hover{transform:scale(1.2) rotate(10deg)}
@@ -88,7 +93,7 @@ body::before{
 /* gift box opening animation */
 .gift-box{
   position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(0);
-  width:200px;height:200px;z-index:40;
+  width:200px;height:200px;z-index:40;pointer-events:auto;
   animation:popIn .4s cubic-bezier(.68,-.55,.27,1.55) forwards;
 }
 @keyframes popIn{to{transform:translate(-50%,-50%) scale(1)}}
@@ -170,6 +175,9 @@ body::before{
 </head>
 <body>
 
+<!-- Background layer -->
+<div class="bg-layer"></div>
+
 <!-- canvases -->
 <canvas id="snow"></canvas>
 <canvas id="characters"></canvas>
@@ -206,18 +214,7 @@ body::before{
   </div>
 </div>
 
-<script src="characters.js"></script>
 <script>
-/* ========= Character Canvas Integration ========= */
-const charCanvas = document.getElementById('characters');
-const charCtx = charCanvas.getContext('2d');
-
-// Initialize character particles
-window.initCharacters = function() {
-  // This will be called by characters.js
-  console.log('Characters initialized from main');
-};
-
 /* ========= Utilities & Time ========= */
 const NY_TARGET = new Date('2026-01-01T00:00:00');
 const XMAS_START = new Date('2025-12-25T00:00:00');
@@ -412,7 +409,8 @@ function showToast(txt){
     borderRadius:'12px',
     zIndex:'60',
     fontSize:'14px',
-    boxShadow:'0 4px 20px rgba(0,0,0,.3)'
+    boxShadow:'0 4px 20px rgba(0,0,0,.3)',
+    pointerEvents:'auto'
   });
   document.body.appendChild(t);
   setTimeout(()=>t.remove(), 2200);
@@ -685,6 +683,9 @@ window.addEventListener('beforeunload', ()=>{
 });
 
 console.log('🎄 Merry Christmas & Happy New Year! 🎆');
+</script>
+
+<!-- Load characters
 </script>
 </body>
 </html>
