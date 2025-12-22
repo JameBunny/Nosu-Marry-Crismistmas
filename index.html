@@ -365,6 +365,10 @@ tick();
 const bgm = document.getElementById('bgm');
 const musicBtn = document.getElementById('musicBtn');
 
+// --- เพิ่มบรรทัดนี้เข้าไปตรงนี้ครับ ---
+bgm.volume = 0.35; 
+// --------------------------------
+
 musicBtn.addEventListener('click', ()=>{ 
   if(bgm.paused){
     bgm.play().catch(e => console.log('Audio play failed:', e));
