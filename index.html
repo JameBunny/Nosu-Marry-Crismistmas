@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Coming Soon — Merry Christmas ❄️</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -20,337 +20,233 @@ body{
 
 body.newyear{
   background:radial-gradient(circle at center,#020617,#000);
-  animation:newyearGlow 6s ease-in-out infinite;
+  animation:glow 4s ease-in-out infinite;
 }
-@keyframes newyearGlow{
+@keyframes glow{
   0%,100%{filter:brightness(1)}
-  50%{filter:brightness(1.15)}
+  50%{filter:brightness(1.25)}
 }
 
 canvas{position:fixed;inset:0;pointer-events:none}
 
 .wrap{
   position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;text-align:center;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
 }
 
 .line{
-  font-size:clamp(42px,8.5vw,130px);
+  font-size:clamp(42px,9vw,140px);
   font-weight:800;
-  letter-spacing:0.04em;
-  line-height:1.15;
   opacity:0;
-  transform:translateY(20px) scale(0.98);
-  filter:blur(6px);
-  text-shadow:0 8px 30px rgba(0,0,0,.55);
-  transition:opacity 0.9s ease, transform 0.9s cubic-bezier(.22,.61,.36,1), filter 0.9s ease;
+  transform:translateY(30px);
+  transition:.8s ease;
 }
 .sub{
-  font-size:clamp(20px,4.8vw,72px);
-  font-weight:600;
-  letter-spacing:0.02em;
+  font-size:clamp(20px,5vw,70px);
   margin-top:12px;
   opacity:0;
-  transform:translateY(26px) scale(0.985);
-  filter:blur(6px);
-  text-shadow:0 6px 22px rgba(0,0,0,.45);
-  transition:opacity 1.05s ease, transform 1.05s cubic-bezier(.22,.61,.36,1), filter 1.05s ease;
+  transform:translateY(30px);
+  transition:1s ease;
 }
 .show .line,.show .sub{
   opacity:1;
-  transform:translateY(0) scale(1);
-  filter:blur(0);
+  transform:translateY(0);
 }
 
-/* 🎄 Message Box */
+/* Message box */
 .message{
   position:fixed;bottom:20px;left:20px;width:300px;
   background:linear-gradient(135deg,#dc2626,#16a34a);
-  border-radius:20px;padding:14px;z-index:20;
+  border-radius:18px;padding:14px;
 }
 .message textarea{
-  width:100%;
-  height:82px;
-  border:none;
-  outline:none;
-  resize:none;
-  border-radius:12px;
-  padding:12px;
-  font-size:14px;
-  line-height:1.4
+  width:100%;height:80px;border:none;border-radius:10px;padding:10px;
 }
 .message button{
-  margin-top:8px;width:100%;padding:8px;border:none;border-radius:12px;
-  background:#fff;color:#b91c1c;font-weight:700;cursor:pointer
+  margin-top:8px;width:100%;padding:8px;border:none;border-radius:10px;
+  background:#fff;font-weight:700;cursor:pointer;
 }
 
-/* 🎁 Gift */
+/* Countdown */
+.countdown{
+  position:fixed;right:20px;bottom:20px;
+  background:linear-gradient(135deg,#2563eb,#9333ea,#db2777);
+  padding:18px;border-radius:24px;
+}
+.countdown .time{display:flex;gap:10px}
+.countdown .box{
+  background:rgba(0,0,0,.4);
+  padding:10px;border-radius:14px;min-width:60px;
+}
+.num{font-size:34px;font-weight:900}
+.label{font-size:11px;opacity:.8}
+
+/* Gift */
 .gift{
-  position:fixed;top:-50px;font-size:32px;animation:fall 6s linear infinite;
-  cursor:pointer
+  position:fixed;top:-50px;font-size:32px;
+  animation:fall 6s linear infinite;
+  cursor:pointer;
 }
 @keyframes fall{to{transform:translateY(110vh)}}
 
-/* 🎁 Opened gift message */
 .gift-message{
-  position:fixed;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%) scale(0.7);
-  background:linear-gradient(135deg,#fff,#fde68a);
-  color:#b91c1c;
-  padding:22px 26px;
-  border-radius:22px;
-  font-size:22px;
-  font-weight:800;
-  z-index:50;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
-  animation:giftOpen 0.9s cubic-bezier(.22,.61,.36,1) forwards,
-             giftFloat 4s ease-in-out infinite 0.9s;
+  position:fixed;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  background:#fff;color:#b91c1c;
+  padding:22px;border-radius:22px;
+  font-size:22px;font-weight:800;
+  animation:pop .9s ease, float 4s ease-in-out infinite .9s;
+}
+@keyframes pop{
+  from{transform:translate(-50%,-40%) scale(.4);opacity:0}
+  to{transform:translate(-50%,-50%) scale(1);opacity:1}
+}
+@keyframes float{
+  0%,100%{transform:translate(-50%,-50%)}
+  50%{transform:translate(-50%,-65%)}
 }
 
-@keyframes giftOpen{
-  0%{opacity:0;transform:translate(-50%,-40%) scale(0.5) rotateX(60deg)}
-  60%{opacity:1;transform:translate(-50%,-55%) scale(1.05) rotateX(0deg)}
-  100%{opacity:1;transform:translate(-50%,-60%) scale(1)}
+/* Music */
+.music-btn{
+  position:fixed;top:20px;right:20px;
+  width:52px;height:52px;border-radius:50%;
+  border:none;background:rgba(255,255,255,.2);
+  color:#fff;font-size:24px;
 }
-
-@keyframes giftFloat{
-  0%,100%{transform:translate(-50%,-60%)}
-  50%{transform:translate(-50%,-72%)}
-}
-
-/* 🎆 Countdown (BIG & CLEAR) */
-.countdown{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  background:linear-gradient(135deg,#2563eb,#7c3aed,#db2777);
-  padding:18px 22px;
-  border-radius:24px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
-  z-index:25;
-  min-width:260px;
-}
-.countdown h3{
-  font-size:13px;
-  letter-spacing:3px;
-  text-align:center;
-  opacity:.85;
-  margin-bottom:10px
-}
-.countdown .time{
-  display:flex;
-  gap:10px;
-  justify-content:center;
-}
-.countdown .box{
-  background:rgba(0,0,0,.35);
-  border-radius:14px;
-  padding:10px 12px;
-  min-width:60px;
-}
-.countdown .num{
-  font-size:34px;
-  font-weight:900;
-  line-height:1
-}
-.countdown .label{
-  font-size:11px;
-  letter-spacing:1px;
-  opacity:.8
-}
-
-/* 🎅 & 🦌 */ & 🦌 */
-.character{position:fixed;top:15%;font-size:64px;animation:fly 18s linear infinite}
-.santa{left:-80px}
-.deer{right:-80px;animation-direction:reverse}
-@keyframes fly{to{transform:translateX(calc(100vw + 160px))}}
-
-/* 🎵 Music */
-.music-btn{position:fixed;top:20px;right:20px;width:52px;height:52px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:24px;cursor:pointer;z-index:30}
 </style>
 </head>
+
 <body>
 <canvas id="snow"></canvas>
 <canvas id="fireworks"></canvas>
 
 <audio id="bgm" loop>
-<source src="https://cdn.pixabay.com/download/audio/2022/12/14/audio_2f7b3f5b1a.mp3" type="audio/mpeg">
+<source src="https://cdn.pixabay.com/download/audio/2022/12/14/audio_2f7b3f5b1a.mp3">
 </audio>
 <button class="music-btn" id="musicBtn">🎵</button>
 
 <div class="wrap" id="wrap">
-  <div class="line" id="line">Coming Soon!</div>
-  <div class="sub" id="sub">Merry Christmas ❄️</div>
+  <div class="line" id="line"></div>
+  <div class="sub" id="sub"></div>
 </div>
 
 <div class="message">
   <textarea id="msg" placeholder="เขียนข้อความถึงคนพิเศษ… 💖"></textarea>
-  <button onclick="sendMsg()">ส่งข้อความ 💌</button>
+  <button onclick="saveMsg()">ส่งข้อความ 💌</button>
 </div>
 
 <div class="countdown" id="countdown">
-  <h3>COUNTDOWN TO 2026</h3>
   <div class="time">
-    <div class="box"><div class="num" id="cd-d">00</div><div class="label">DAYS</div></div>
-    <div class="box"><div class="num" id="cd-h">00</div><div class="label">HRS</div></div>
-    <div class="box"><div class="num" id="cd-m">00</div><div class="label">MIN</div></div>
-    <div class="box"><div class="num" id="cd-s">00</div><div class="label">SEC</div></div>
+    <div class="box"><div class="num" id="d">00</div><div class="label">DAYS</div></div>
+    <div class="box"><div class="num" id="h">00</div><div class="label">HRS</div></div>
+    <div class="box"><div class="num" id="m">00</div><div class="label">MIN</div></div>
+    <div class="box"><div class="num" id="s">00</div><div class="label">SEC</div></div>
   </div>
 </div>
 
-<div class="character santa">🎅</div>
-<div class="character deer">🦌</div>
-
 <script>
-/* TEXT (separated by language & date-aware) */
-const textSets = {
-  en: {
-    default: { line: 'Coming Soon!', sub: 'Merry Christmas ❄️' },
-    farewell2025: { line: 'Goodbye 2025 👋', sub: 'See you in the New Year' },
-    newyear: { line: 'Happy New Year 2026 🎆', sub: 'Welcome 2026' }
-  },
-  th: {
-    default: { line: 'Coming Soon!', sub: 'สุขสันต์วันคริสต์มาส ❄️' },
-    farewell2025: { line: 'ลาก่อนปี 2025 👋', sub: 'แล้วพบกันใหม่ปีหน้า' },
-    newyear: { line: 'สวัสดีปีใหม่ 2026 🎆', sub: 'ขอให้มีความสุขตลอดปี' }
-  },
-  jp: {
-    default: { line: 'Coming Soon!', sub: 'メリークリスマス ❄️' },
-    farewell2025: { line: 'さようなら 2025 👋', sub: '新しい年まであと少し' },
-    newyear: { line: 'あけましておめでとうございます 2026 🎆', sub: 'ようこそ 2026 年' }
-  }
-};
-
-const languages = ['en','th','jp'];
-let langIndex = 0;
-
-const line = document.getElementById('line');
-const sub  = document.getElementById('sub');
-const wrap = document.getElementById('wrap');
-
-function getPhase(){
-  const now = new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Bangkok'}));
-  const newYear = new Date('2026-01-01T00:00:00+07:00');
-  const farewell = new Date('2025-12-30T00:00:00+07:00');
-
-  if(now >= newYear) return 'newyear';
-  if(now >= farewell) return 'farewell2025';
-  return 'default';
-}
+/* TEXT */
+const texts=[
+ ['Coming Soon!','Merry Christmas ❄️'],
+ ['Coming Soon!','สุขสันต์วันคริสต์มาส ❄️'],
+ ['Coming Soon!','メリークリスマス ❄️'],
+ ['Happy New Year 2026 🎆','สวัสดีปีใหม่ 2026 🎆'],
+ ['Happy New Year 2026 🎆','あけましておめでとうございます 2026 🎆']
+];
+let ti=0;
+const wrap=document.getElementById('wrap'),
+line=document.getElementById('line'),
+sub=document.getElementById('sub');
 
 function showText(){
-  const lang = languages[langIndex];
-  const phase = getPhase();
-  const text = textSets[lang][phase];
-
-  // smooth fade-out
-  wrap.classList.remove('show');
-
-  setTimeout(()=>{
-    line.textContent = text.line;
-    sub.textContent  = text.sub;
-
-    // double RAF = ensure browser reflow for ultra-smooth transition
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        wrap.classList.add('show');
-      });
-    });
-  }, 500);
-
-  langIndex = (langIndex + 1) % languages.length;
+ wrap.classList.remove('show');
+ setTimeout(()=>{
+  line.textContent=texts[ti][0];
+  sub.textContent=texts[ti][1];
+  wrap.classList.add('show');
+  ti=(ti+1)%texts.length;
+ },400);
 }
-
-showText();
-setInterval(showText, 4200);
+showText();setInterval(showText,4200);
 
 /* MESSAGE */
-let savedMsg='';
-function sendMsg(){
- savedMsg=document.getElementById('msg').value.trim();
- if(!savedMsg) return;
-}
+let saved='';
+function saveMsg(){saved=document.getElementById('msg').value}
 
 /* GIFTS */
-function spawnGift(){
+setInterval(()=>{
  const g=document.createElement('div');
  g.className='gift';g.textContent='🎁';
  g.style.left=Math.random()*100+'vw';
- g.onclick=()=>openGift();
+ g.onclick=()=>{if(saved){
+   const b=document.createElement('div');
+   b.className='gift-message';b.textContent=saved;
+   document.body.appendChild(b);
+   setTimeout(()=>b.remove(),6000);
+ }};
  document.body.appendChild(g);
  setTimeout(()=>g.remove(),6000);
+},900);
+
+/* COUNTDOWN + FIREWORKS */
+const fw=document.getElementById('fireworks'),fctx=fw.getContext('2d');
+fw.width=innerWidth;fw.height=innerHeight;
+let fire=false,parts=[];
+
+function launch(){
+ if(!fire)return;
+ const x=Math.random()*fw.width,y=Math.random()*fw.height*0.4;
+ for(let i=0;i<90;i++)parts.push({
+  x,y,vx:(Math.random()-.5)*7,vy:(Math.random()-.5)*7,l:70
+ });
 }
-setInterval(spawnGift,900);
+function anim(){
+ fctx.clearRect(0,0,fw.width,fw.height);
+ parts.forEach((p,i)=>{
+  p.x+=p.vx;p.y+=p.vy;p.l--;
+  fctx.fillStyle=`hsl(${Math.random()*360},100%,60%)`;
+  fctx.fillRect(p.x,p.y,3,3);
+  if(p.l<=0)parts.splice(i,1);
+ });
+ requestAnimationFrame(anim);
+}
+anim();setInterval(launch,700);
 
-function openGift(){
- if(!savedMsg) return;
-
- const box=document.createElement('div');
- box.className='gift-message';
- box.innerHTML = `🎁<br><span>${savedMsg}</span>`;
- document.body.appendChild(box);
-
- // sparkle particles
- for(let i=0;i<14;i++){
-   const s=document.createElement('div');
-   s.style.position='fixed';
-   s.style.left='50%';
-   s.style.top='50%';
-   s.style.fontSize='20px';
-   s.style.pointerEvents='none';
-   s.textContent='✨';
-   document.body.appendChild(s);
-
-   const angle=Math.random()*Math.PI*2;
-   const dist=80+Math.random()*60;
-   s.animate([
-     {transform:'translate(-50%,-50%) scale(1)',opacity:1},
-     {transform:`translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(0)`,opacity:0}
-   ],{duration:900,easing:'ease-out'});
-
-   setTimeout(()=>s.remove(),900);
+function countdown(){
+ const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Bangkok'}));
+ const t=new Date('2026-01-01T00:00:00+07:00')-now;
+ if(t<=0){
+  document.body.classList.add('newyear');
+  document.getElementById('countdown').innerHTML='🎆 HAPPY NEW YEAR 2026 🎆';
+  fire=true;return;
  }
-
- setTimeout(()=>box.remove(),6000);
+ d.textContent=Math.floor(t/86400000);
+ h.textContent=Math.floor(t/3600000)%24;
+ m.textContent=Math.floor(t/60000)%60;
+ s.textContent=Math.floor(t/1000)%60;
 }
-
-/* COUNTDOWN (Thailand Time – BIG UI) */
-function updateCountdown(){
-  const now = new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Bangkok'}));
-  const target = new Date('2020-01-01T00:00:00+07:00');
-  const diff = target - now;
-
-  if(diff <= 0){
-    document.getElementById('countdown').innerHTML = '<h3>🎆 HAPPY NEW YEAR 2026 🎆</h3>';
-    document.body.classList.add('newyear');
-    return;
-  }
-
-  const d = Math.floor(diff / 86400000);
-  const h = Math.floor(diff % 86400000 / 3600000);
-  const m = Math.floor(diff % 3600000 / 60000);
-  const s = Math.floor(diff % 60000 / 1000);
-
-  document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
-  document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
-  document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
-  document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
-}
-setInterval(updateCountdown,1000);
-updateCountdown();
+setInterval(countdown,1000);countdown();
 
 /* MUSIC */
-const bgm=document.getElementById('bgm'),btn=document.getElementById('musicBtn');let playing=false;
-btn.onclick=()=>{playing?bgm.pause():bgm.play();playing=!playing;btn.textContent=playing?'⏸️':'🎵'};
+const bgm=document.getElementById('bgm'),btn=document.getElementById('musicBtn');
+let play=false;
+btn.onclick=()=>{play?bgm.pause():bgm.play();play=!play;btn.textContent=play?'⏸️':'🎵'};
 
 /* SNOW */
-const c=document.getElementById('snow'),ctx=c.getContext('2d');let w,h,f=[];
-function resize(){w=c.width=innerWidth;h=c.height=innerHeight;f=Array.from({length:200},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*3+1,s:Math.random()+.5}))}
-addEventListener('resize',resize);resize();
-(function snow(){ctx.clearRect(0,0,w,h);ctx.fillStyle='white';f.forEach(o=>{ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);ctx.fill();o.y+=o.s;if(o.y>h){o.y=0;o.x=Math.random()*w}});requestAnimationFrame(snow)})();
+const c=document.getElementById('snow'),ctx=c.getContext('2d');
+c.width=innerWidth;c.height=innerHeight;
+const flakes=[...Array(200)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*3+1}));
+(function snow(){
+ ctx.clearRect(0,0,c.width,c.height);
+ ctx.fillStyle='white';
+ flakes.forEach(f=>{
+  ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);ctx.fill();
+  f.y+=1;if(f.y>c.height)f.y=0;
+ });
+ requestAnimationFrame(snow);
+})();
 </script>
 </body>
 </html>
