@@ -1,11 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport"
-  content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-
-<title>Coming Soon — Merry Christmas ❄️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Christmas & New Year</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:700&family=Noto+Sans+Thai:700&family=Noto+Sans+JP:700&display=swap" rel="stylesheet">
 
@@ -18,14 +16,9 @@ body{
   background:radial-gradient(circle at top,#0f172a,#020617 70%);
   color:#fff;
   overflow:hidden;
-  padding:
-    env(safe-area-inset-top)
-    env(safe-area-inset-right)
-    env(safe-area-inset-bottom)
-    env(safe-area-inset-left);
 }
 
-/* ===== BACKGROUND MOTION ===== */
+/* background motion */
 body::before{
   content:'';
   position:fixed;
@@ -35,18 +28,12 @@ body::before{
     radial-gradient(circle at 70% 80%,rgba(255,255,255,.06),transparent 45%);
   animation:bgMove 18s linear infinite;
 }
-@keyframes bgMove{
-  50%{transform:translate(-6%,6%)}
-}
+@keyframes bgMove{50%{transform:translate(-6%,6%)}}
 
-canvas{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-}
+/* canvas */
+canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
 
-/* ===== CENTER TEXT ===== */
+/* center text */
 .wrap{
   position:absolute;
   inset:0;
@@ -58,23 +45,23 @@ canvas{
   padding:16px;
   z-index:2;
 }
-
 .line{
   font-size:clamp(42px,9vw,120px);
   font-weight:800;
-  animation:breathe 5s ease-in-out infinite;
+  animation:breathe 5s ease-in-out infinite, shimmer 4s ease-in-out infinite;
 }
 .sub{
   font-size:clamp(18px,4.5vw,56px);
-  margin-top:12px;
-  opacity:.9;
+  margin-top:14px;
+  opacity:.95;
+}
+@keyframes breathe{50%{transform:scale(1.05)}}
+@keyframes shimmer{
+  0%,100%{text-shadow:0 0 20px rgba(255,255,255,.3)}
+  50%{text-shadow:0 0 45px rgba(255,255,255,.8)}
 }
 
-@keyframes breathe{
-  50%{transform:scale(1.05)}
-}
-
-/* ===== MESSAGE BOX ===== */
+/* message box */
 .message{
   position:fixed;
   left:16px;
@@ -100,9 +87,10 @@ canvas{
   border:none;
   border-radius:12px;
   font-weight:700;
+  cursor:pointer;
 }
 
-/* ===== COUNTDOWN ===== */
+/* countdown */
 .countdown{
   position:fixed;
   right:16px;
@@ -114,14 +102,8 @@ canvas{
   z-index:25;
   animation:pulse 2.5s ease-in-out infinite;
 }
-@keyframes pulse{
-  50%{transform:scale(1.05)}
-}
-.time{
-  display:flex;
-  gap:8px;
-  justify-content:space-between;
-}
+@keyframes pulse{50%{transform:scale(1.05)}}
+.time{display:flex;gap:8px}
 .box{
   flex:1;
   background:rgba(0,0,0,.35);
@@ -129,25 +111,18 @@ canvas{
   padding:8px;
   text-align:center;
 }
-.num{
-  font-size:28px;
-  font-weight:900;
-}
-.label{
-  font-size:10px;
-  opacity:.8;
-}
+.num{font-size:28px;font-weight:900}
+.label{font-size:10px;opacity:.8}
 
-/* ===== GIFTS ===== */
+/* gifts */
 .gift{
   position:fixed;
   top:-40px;
   font-size:30px;
   animation:fall 7s linear infinite;
+  z-index:10;
 }
-@keyframes fall{
-  to{transform:translateY(110vh)}
-}
+@keyframes fall{to{transform:translateY(110vh)}}
 .gift-message{
   position:fixed;
   left:50%;
@@ -162,14 +137,10 @@ canvas{
   animation:pop .7s ease, float 4s ease-in-out infinite;
   z-index:40;
 }
-@keyframes pop{
-  from{transform:translate(-50%,-50%) scale(.6);opacity:0}
-}
-@keyframes float{
-  50%{transform:translate(-50%,-60%)}
-}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(.6);opacity:0}}
+@keyframes float{50%{transform:translate(-50%,-60%)}}
 
-/* ===== MUSIC ===== */
+/* music */
 .music-btn{
   position:fixed;
   top:16px;
@@ -183,12 +154,6 @@ canvas{
   color:#fff;
   z-index:30;
 }
-
-/* ===== MOBILE ADJUST ===== */
-@media (max-width: 768px){
-  .wrap{padding-top:80px}
-  .line{letter-spacing:.03em}
-}
 </style>
 </head>
 
@@ -199,12 +164,11 @@ canvas{
 <audio id="bgm" loop playsinline>
   <source src="https://cdn.pixabay.com/download/audio/2022/12/14/audio_2f7b3f5b1a.mp3">
 </audio>
-
 <button class="music-btn" id="musicBtn">🎵</button>
 
 <div class="wrap">
-  <div class="line" id="line">Coming Soon!</div>
-  <div class="sub" id="sub">Merry Christmas ❄️</div>
+  <div class="line" id="line"></div>
+  <div class="sub" id="sub"></div>
 </div>
 
 <div class="message">
@@ -222,18 +186,82 @@ canvas{
 </div>
 
 <script>
-/* ===== MESSAGE ===== */
+/* ===== TIME (THAILAND) ===== */
+function nowTH(){
+  return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Bangkok'}));
+}
+
+/* ===== TEXT DATA (3 LANGUAGES ALWAYS) ===== */
+const TEXTS = {
+  before25: [
+    {
+      line:'Coming Soon!',
+      sub:'Merry Christmas ❄️ / สุขสันต์วันคริสต์มาส ❄️ / メリークリスマス ❄️'
+    }
+  ],
+  christmas: [
+    {line:'Merry Christmas ❄️',sub:'Merry Christmas ❄️'},
+    {line:'สุขสันต์วันคริสต์มาส ❄️',sub:'สุขสันต์วันคริสต์มาส ❄️'},
+    {line:'メリークリスマス ❄️',sub:'メリークリスマス ❄️'}
+  ],
+  newyear: [
+    {
+      line:'Goodbye 2025, Welcome 2026 🎆',
+      sub:'ลาก่อนปี 2025 ขอให้ปี 2026 พบแต่สิ่งที่ดี'
+    },
+    {
+      line:'ลาก่อนปี 2025 ต้อนรับปี 2026 🎆',
+      sub:'ขอให้ปี 2026 ได้พบแต่สิ่งดี ๆ'
+    },
+    {
+      line:'さようなら2025、ようこそ2026 🎆',
+      sub:'2026年が良いことばかりの一年になりますように'
+    }
+  ]
+};
+
+const lineEl=document.getElementById('line');
+const subEl=document.getElementById('sub');
+let idx=0;
+
+function phase(){
+  const now=nowTH();
+  if(now>=new Date('2026-01-01T00:00:00+07:00')) return 'newyear';
+  if(now>=new Date('2025-12-25T00:00:00+07:00')) return 'christmas';
+  return 'before25';
+}
+
+function updateText(){
+  const list=TEXTS[phase()];
+  const t=list[idx%list.length];
+  lineEl.textContent=t.line;
+  subEl.textContent=t.sub;
+  idx++;
+}
+updateText();
+setInterval(updateText,4200);
+
+/* ===== COUNTDOWN ===== */
+function tick(){
+  const diff=new Date('2026-01-01T00:00:00+07:00')-nowTH();
+  if(diff<=0) return;
+  d.textContent=Math.floor(diff/86400000);
+  h.textContent=Math.floor(diff%86400000/3600000);
+  m.textContent=Math.floor(diff%3600000/60000);
+  s.textContent=Math.floor(diff%60000/1000);
+}
+setInterval(tick,1000);tick();
+
+/* ===== MESSAGE & GIFTS ===== */
 let saved='';
 function sendMsg(){saved=msg.value.trim()}
-
-/* ===== GIFTS ===== */
 setInterval(()=>{
   const g=document.createElement('div');
   g.className='gift';
   g.textContent='🎁';
   g.style.left=Math.random()*100+'vw';
   g.onclick=()=>{
-    if(!saved)return;
+    if(!saved) return;
     const b=document.createElement('div');
     b.className='gift-message';
     b.textContent=saved;
@@ -244,30 +272,10 @@ setInterval(()=>{
   setTimeout(()=>g.remove(),7000);
 },1200);
 
-/* ===== COUNTDOWN ===== */
-function tick(){
-  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Bangkok'}));
-  const target=new Date('2026-01-01T00:00:00+07:00');
-  const diff=target-now;
-  if(diff<=0){
-    line.textContent='Happy New Year 2026 🎆';
-    sub.textContent='สวัสดีปีใหม่ 2026';
-    return;
-  }
-  d.textContent=Math.floor(diff/86400000);
-  h.textContent=Math.floor(diff%86400000/3600000);
-  m.textContent=Math.floor(diff%3600000/60000);
-  s.textContent=Math.floor(diff%60000/1000);
-}
-setInterval(tick,1000);tick();
+/* ===== MUSIC ===== */
+musicBtn.onclick=()=>bgm.paused?bgm.play():bgm.pause();
 
-/* ===== MUSIC (iOS safe) ===== */
-musicBtn.onclick=()=>{
-  if(bgm.paused) bgm.play();
-  else bgm.pause();
-};
-
-/* ===== SNOW (mobile safe) ===== */
+/* ===== SNOW ===== */
 const c=snow,ctx=c.getContext('2d');
 function resize(){c.width=innerWidth;c.height=innerHeight}
 resize();addEventListener('resize',resize);
@@ -279,8 +287,7 @@ const flakes=[...Array(innerWidth<768?120:220)].map(()=>({x:Math.random()*c.widt
     ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
     ctx.fillStyle='white';
     ctx.fill();
-    f.y+=f.s;
-    if(f.y>c.height)f.y=0;
+    f.y+=f.s;if(f.y>c.height)f.y=0;
   });
   requestAnimationFrame(snow);
 })();
