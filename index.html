@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+
 <title>Coming Soon — Merry Christmas ❄️</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:700&family=Noto+Sans+Thai:700&family=Noto+Sans+JP:700&display=swap" rel="stylesheet">
@@ -12,13 +14,18 @@
 html,body{width:100%;height:100%}
 
 body{
-  background:radial-gradient(circle at top,#0f172a,#020617 70%);
   font-family:'Noto Sans','Noto Sans Thai','Noto Sans JP',system-ui;
+  background:radial-gradient(circle at top,#0f172a,#020617 70%);
   color:#fff;
   overflow:hidden;
+  padding:
+    env(safe-area-inset-top)
+    env(safe-area-inset-right)
+    env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
 }
 
-/* ===== BACKGROUND LIFE ===== */
+/* ===== BACKGROUND MOTION ===== */
 body::before{
   content:'';
   position:fixed;
@@ -26,15 +33,12 @@ body::before{
   background:
     radial-gradient(circle at 30% 20%,rgba(255,255,255,.08),transparent 40%),
     radial-gradient(circle at 70% 80%,rgba(255,255,255,.06),transparent 45%);
-  animation:bgMove 20s linear infinite;
+  animation:bgMove 18s linear infinite;
 }
 @keyframes bgMove{
-  0%{transform:translate(0,0)}
-  50%{transform:translate(-5%,5%)}
-  100%{transform:translate(0,0)}
+  50%{transform:translate(-6%,6%)}
 }
 
-/* ===== CANVAS ===== */
 canvas{
   position:fixed;
   inset:0;
@@ -51,104 +55,99 @@ canvas{
   justify-content:center;
   flex-direction:column;
   text-align:center;
+  padding:16px;
   z-index:2;
 }
 
 .line{
-  font-size:clamp(48px,9vw,140px);
+  font-size:clamp(42px,9vw,120px);
   font-weight:800;
-  animation:breathe 6s ease-in-out infinite, shimmer 4s ease-in-out infinite;
+  animation:breathe 5s ease-in-out infinite;
 }
-
 .sub{
-  font-size:clamp(22px,4.5vw,72px);
-  margin-top:14px;
-  animation:shimmer 5s ease-in-out infinite;
+  font-size:clamp(18px,4.5vw,56px);
+  margin-top:12px;
+  opacity:.9;
 }
 
 @keyframes breathe{
-  0%,100%{transform:scale(1);letter-spacing:.04em}
-  50%{transform:scale(1.05);letter-spacing:.09em}
+  50%{transform:scale(1.05)}
 }
 
-@keyframes shimmer{
-  0%,100%{text-shadow:0 0 20px rgba(255,255,255,.3)}
-  50%{text-shadow:0 0 50px rgba(255,255,255,.7)}
-}
-
-/* ===== MESSAGE ===== */
+/* ===== MESSAGE BOX ===== */
 .message{
   position:fixed;
-  left:20px;
-  bottom:20px;
-  width:300px;
+  left:16px;
+  bottom:16px;
+  width:min(92vw,320px);
   background:linear-gradient(135deg,#dc2626,#16a34a);
-  border-radius:20px;
+  border-radius:18px;
   padding:14px;
   z-index:20;
 }
 .message textarea{
   width:100%;
-  height:80px;
+  height:72px;
   border:none;
   border-radius:12px;
   padding:10px;
+  font-size:15px;
 }
 .message button{
   margin-top:8px;
   width:100%;
-  padding:8px;
+  padding:10px;
   border:none;
   border-radius:12px;
   font-weight:700;
-  cursor:pointer;
 }
 
 /* ===== COUNTDOWN ===== */
 .countdown{
   position:fixed;
-  right:20px;
-  bottom:20px;
+  right:16px;
+  bottom:16px;
+  width:min(92vw,300px);
   background:linear-gradient(135deg,#2563eb,#7c3aed,#db2777);
-  padding:18px 22px;
-  border-radius:24px;
+  border-radius:22px;
+  padding:14px;
   z-index:25;
   animation:pulse 2.5s ease-in-out infinite;
 }
 @keyframes pulse{
-  0%,100%{transform:scale(1)}
-  50%{transform:scale(1.06)}
+  50%{transform:scale(1.05)}
 }
-.time{display:flex;gap:10px}
+.time{
+  display:flex;
+  gap:8px;
+  justify-content:space-between;
+}
 .box{
+  flex:1;
   background:rgba(0,0,0,.35);
   border-radius:14px;
-  padding:10px;
-  min-width:60px;
+  padding:8px;
   text-align:center;
 }
 .num{
-  font-size:34px;
+  font-size:28px;
   font-weight:900;
-  animation:digitGlow 1.5s ease-in-out infinite alternate;
 }
-@keyframes digitGlow{
-  from{text-shadow:0 0 10px rgba(255,255,255,.4)}
-  to{text-shadow:0 0 25px rgba(255,255,255,.9)}
+.label{
+  font-size:10px;
+  opacity:.8;
 }
-.label{font-size:11px;opacity:.8}
 
 /* ===== GIFTS ===== */
 .gift{
   position:fixed;
   top:-40px;
-  font-size:32px;
-  animation:fall 6s linear infinite;
-  cursor:pointer;
-  z-index:10;
+  font-size:30px;
+  animation:fall 7s linear infinite;
 }
-@keyframes fall{to{transform:translateY(110vh)}}
-
+@keyframes fall{
+  to{transform:translateY(110vh)}
+}
 .gift-message{
   position:fixed;
   left:50%;
@@ -156,16 +155,15 @@ canvas{
   transform:translate(-50%,-50%);
   background:#fff;
   color:#b91c1c;
-  padding:22px 26px;
-  border-radius:20px;
-  font-size:22px;
+  padding:20px;
+  border-radius:18px;
+  font-size:20px;
   font-weight:800;
-  z-index:50;
-  animation:pop .8s ease, float 4s ease-in-out infinite;
+  animation:pop .7s ease, float 4s ease-in-out infinite;
+  z-index:40;
 }
 @keyframes pop{
-  from{transform:translate(-50%,-50%) scale(.5);opacity:0}
-  to{transform:translate(-50%,-50%) scale(1);opacity:1}
+  from{transform:translate(-50%,-50%) scale(.6);opacity:0}
 }
 @keyframes float{
   50%{transform:translate(-50%,-60%)}
@@ -174,31 +172,37 @@ canvas{
 /* ===== MUSIC ===== */
 .music-btn{
   position:fixed;
-  top:20px;
-  right:20px;
+  top:16px;
+  right:16px;
   width:52px;
   height:52px;
   border-radius:50%;
   border:none;
   background:rgba(255,255,255,.2);
-  color:#fff;
   font-size:24px;
-  cursor:pointer;
+  color:#fff;
   z-index:30;
+}
+
+/* ===== MOBILE ADJUST ===== */
+@media (max-width: 768px){
+  .wrap{padding-top:80px}
+  .line{letter-spacing:.03em}
 }
 </style>
 </head>
 
 <body>
-<canvas id="snow"></canvas>
-<canvas id="fireworks"></canvas>
 
-<audio id="bgm" loop>
+<canvas id="snow"></canvas>
+
+<audio id="bgm" loop playsinline>
   <source src="https://cdn.pixabay.com/download/audio/2022/12/14/audio_2f7b3f5b1a.mp3">
 </audio>
+
 <button class="music-btn" id="musicBtn">🎵</button>
 
-<div class="wrap" id="wrap">
+<div class="wrap">
   <div class="line" id="line">Coming Soon!</div>
   <div class="sub" id="sub">Merry Christmas ❄️</div>
 </div>
@@ -220,7 +224,7 @@ canvas{
 <script>
 /* ===== MESSAGE ===== */
 let saved='';
-function sendMsg(){saved=document.getElementById('msg').value.trim()}
+function sendMsg(){saved=msg.value.trim()}
 
 /* ===== GIFTS ===== */
 setInterval(()=>{
@@ -237,17 +241,17 @@ setInterval(()=>{
     setTimeout(()=>b.remove(),5000);
   };
   document.body.appendChild(g);
-  setTimeout(()=>g.remove(),6000);
-},900);
+  setTimeout(()=>g.remove(),7000);
+},1200);
 
 /* ===== COUNTDOWN ===== */
-function update(){
+function tick(){
   const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Bangkok'}));
   const target=new Date('2026-01-01T00:00:00+07:00');
   const diff=target-now;
   if(diff<=0){
-    document.getElementById('line').textContent='Happy New Year 2026 🎆';
-    document.getElementById('sub').textContent='สวัสดีปีใหม่ 2026';
+    line.textContent='Happy New Year 2026 🎆';
+    sub.textContent='สวัสดีปีใหม่ 2026';
     return;
   }
   d.textContent=Math.floor(diff/86400000);
@@ -255,24 +259,30 @@ function update(){
   m.textContent=Math.floor(diff%3600000/60000);
   s.textContent=Math.floor(diff%60000/1000);
 }
-setInterval(update,1000);update();
+setInterval(tick,1000);tick();
 
-/* ===== MUSIC ===== */
-musicBtn.onclick=()=>bgm.paused?bgm.play():bgm.pause();
+/* ===== MUSIC (iOS safe) ===== */
+musicBtn.onclick=()=>{
+  if(bgm.paused) bgm.play();
+  else bgm.pause();
+};
 
-/* ===== SNOW ===== */
-const snow=document.getElementById('snow'),ctx=snow.getContext('2d');
-function resize(){snow.width=innerWidth;snow.height=innerHeight}
+/* ===== SNOW (mobile safe) ===== */
+const c=snow,ctx=c.getContext('2d');
+function resize(){c.width=innerWidth;c.height=innerHeight}
 resize();addEventListener('resize',resize);
-const flakes=[...Array(200)].map(()=>({x:Math.random()*snow.width,y:Math.random()*snow.height,r:Math.random()*3+1,s:Math.random()+.5}));
-(function draw(){
-  ctx.clearRect(0,0,snow.width,snow.height);
+const flakes=[...Array(innerWidth<768?120:220)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*3+1,s:Math.random()+.6}));
+(function snow(){
+  ctx.clearRect(0,0,c.width,c.height);
   flakes.forEach(f=>{
-    ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
-    ctx.fillStyle='white';ctx.fill();
-    f.y+=f.s;if(f.y>snow.height)f.y=0;
+    ctx.beginPath();
+    ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+    ctx.fillStyle='white';
+    ctx.fill();
+    f.y+=f.s;
+    if(f.y>c.height)f.y=0;
   });
-  requestAnimationFrame(draw);
+  requestAnimationFrame(snow);
 })();
 </script>
 </body>
