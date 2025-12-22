@@ -11,70 +11,65 @@
 html,body{width:100%;height:100%}
 body{
   font-family:'Noto Sans','Noto Sans Thai','Noto Sans JP',system-ui;
-  background:#000;
+  background:radial-gradient(circle at top,#0f172a,#020617 70%);
   color:#fff;overflow:hidden;
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-/* Dark gradient background */
-.bg-layer{
-  position:fixed;inset:0;z-index:0;
-  background:radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a15 100%);
-}
-
-/* Animated gradient overlay */
-.bg-layer::before{
-  content:"";position:absolute;inset:-20%;
+/* subtle moving background */
+body::before{
+  content:"";position:fixed;inset:-20%;
   background:
-    radial-gradient(circle at 25% 20%, rgba(56,189,248,.08), transparent 40%),
-    radial-gradient(circle at 75% 80%, rgba(167,139,250,.06), transparent 45%);
+    radial-gradient(circle at 25% 20%, rgba(255,255,255,.06), transparent 40%),
+    radial-gradient(circle at 75% 80%, rgba(255,255,255,.04), transparent 45%);
+  z-index:0;pointer-events:none;
   animation:bgMove 30s ease-in-out infinite;
 }
 @keyframes bgMove{0%{transform:translate(0,0)}50%{transform:translate(-3%,3%)}100%{transform:translate(0,0)}}
 
-/* Canvas layers - PROPER Z-INDEX ORDER */
+/* Canvas layers */
 #snow{position:fixed;inset:0;pointer-events:none;z-index:1}
-#characters{position:fixed;inset:0;pointer-events:auto;z-index:2;opacity:1}
+#characters{position:fixed;inset:0;pointer-events:auto;z-index:2}
 #fireworks{position:fixed;inset:0;pointer-events:none;z-index:8}
 
 /* ========== CONTENT LAYERS ========== */
 .wrap{
   position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
   z-index:5;transform-style:preserve-3d;transition:transform .12s linear;
-  padding:4vmin;pointer-events:none;
+  padding:4vmin;
 }
 .line{
   font-size:clamp(38px,9vw,120px);font-weight:800;line-height:1.02;
   will-change:transform,opacity,text-shadow;
   transition:opacity .45s ease, transform .45s cubic-bezier(.2,.9,.2,1);
   opacity:1;
-  text-shadow:0 8px 30px rgba(0,0,0,.8), 0 0 40px rgba(255,255,255,.3);
+  text-shadow:0 8px 30px rgba(0,0,0,.55);
   animation:breath 8s ease-in-out infinite, shimmer 6s ease-in-out infinite;
 }
 .sub{
   font-size:clamp(16px,4.5vw,44px);margin-top:12px;opacity:.95;
   transition:opacity .45s ease, transform .45s cubic-bezier(.2,.9,.2,1);
-  text-shadow:0 6px 22px rgba(0,0,0,.6), 0 0 30px rgba(255,255,255,.2);
+  text-shadow:0 6px 22px rgba(0,0,0,.45);
   animation:shimmer 6s ease-in-out infinite;
 }
 @keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-@keyframes shimmer{0%,100%{text-shadow:0 8px 30px rgba(0,0,0,.8), 0 0 40px rgba(255,255,255,.3)}50%{text-shadow:0 8px 30px rgba(0,0,0,.8), 0 0 60px rgba(255,255,255,.6)}}
+@keyframes shimmer{0%,100%{text-shadow:0 0 20px rgba(255,255,255,.18)}50%{text-shadow:0 0 35px rgba(255,255,255,.5)}}
 
 /* ========== UI: message / music / countdown ========== */
 .message{
   position:fixed;left:16px;bottom:16px;width:min(92vw,360px);background:linear-gradient(135deg,#dc2626,#16a34a);
-  border-radius:18px;padding:12px;z-index:10;box-shadow:0 10px 40px rgba(0,0,0,.45);pointer-events:auto;
+  border-radius:18px;padding:12px;z-index:10;box-shadow:0 10px 40px rgba(0,0,0,.45)
 }
 .message textarea{width:100%;height:78px;border-radius:12px;border:none;padding:10px;font-size:15px;resize:none;font-family:inherit}
 .message button{margin-top:8px;width:100%;padding:10px;border-radius:12px;border:none;font-weight:700;cursor:pointer;background:#fff;transition:transform .2s}
 .message button:hover{transform:scale(1.05)}
 
 /* music button */
-.music-btn{position:fixed;top:16px;right:16px;width:52px;height:52px;border-radius:50%;border:none;background:rgba(255,255,255,.12);font-size:22px;z-index:20;cursor:pointer;transition:all .3s;pointer-events:auto}
+.music-btn{position:fixed;top:16px;right:16px;width:52px;height:52px;border-radius:50%;border:none;background:rgba(255,255,255,.12);font-size:22px;z-index:20;cursor:pointer;transition:all .3s}
 .music-btn:hover{background:rgba(255,255,255,.2);transform:scale(1.1)}
 
 /* countdown */
-.countdown{position:fixed;right:16px;bottom:16px;width:min(92vw,320px);background:linear-gradient(135deg,#2563eb,#7c3aed,#db2777);border-radius:22px;padding:12px;z-index:20;box-shadow:0 20px 60px rgba(0,0,0,.45);pointer-events:auto}
+.countdown{position:fixed;right:16px;bottom:16px;width:min(92vw,320px);background:linear-gradient(135deg,#2563eb,#7c3aed,#db2777);border-radius:22px;padding:12px;z-index:20;box-shadow:0 20px 60px rgba(0,0,0,.45)}
 .countdown .head{font-size:12px;letter-spacing:2px;text-align:center;opacity:.9;margin-bottom:8px}
 .countdown .time{display:flex;gap:8px;justify-content:center}
 .box{flex:1;background:rgba(0,0,0,.36);padding:8px;border-radius:12px;text-align:center}
@@ -84,7 +79,7 @@ body{
 /* gift box - 3D effect */
 .gift{
   position:fixed;top:-60px;font-size:40px;z-index:6;cursor:pointer;
-  transition:transform .2s;pointer-events:auto;
+  transition:transform .2s;
   animation:fall linear infinite;
 }
 .gift:hover{transform:scale(1.2) rotate(10deg)}
@@ -93,7 +88,7 @@ body{
 /* gift box opening animation */
 .gift-box{
   position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(0);
-  width:200px;height:200px;z-index:40;pointer-events:auto;
+  width:200px;height:200px;z-index:40;
   animation:popIn .4s cubic-bezier(.68,-.55,.27,1.55) forwards;
 }
 @keyframes popIn{to{transform:translate(-50%,-50%) scale(1)}}
@@ -175,28 +170,32 @@ body{
 </head>
 <body>
 
-<div class="bg-layer"></div>
-
+<!-- canvases -->
 <canvas id="snow"></canvas>
 <canvas id="characters"></canvas>
 <canvas id="fireworks"></canvas>
 
+<!-- audio -->
 <audio id="bgm" loop playsinline>
   <source src="https://cdn.pixabay.com/download/audio/2022/12/14/audio_2f7b3f5b1a.mp3" type="audio/mpeg">
 </audio>
 
+<!-- music control -->
 <button class="music-btn" id="musicBtn" aria-label="Toggle music">🎵</button>
 
+<!-- main text -->
 <div class="wrap" id="wrap">
   <div class="line" id="line">Merry Christmas ❄️</div>
   <div class="sub" id="sub">Wishing you warmth and happiness</div>
 </div>
 
+<!-- message box -->
 <div class="message" id="messageBox">
   <textarea id="msg" placeholder="เขียนข้อความถึงคนพิเศษ… 💖"></textarea>
   <button id="sendBtn">ส่งข้อความ 💌</button>
 </div>
 
+<!-- countdown -->
 <div class="countdown" id="countdown">
   <div class="head" id="countHead">COUNTDOWN TO 2026</div>
   <div class="time">
@@ -207,11 +206,19 @@ body{
   </div>
 </div>
 
+<script src="characters.js"></script>
 <script>
-/* =========================================
-   PART 1: MAIN LOGIC (Snow, UI, Gifts, Fireworks)
-   ========================================= */
+/* ========= Character Canvas Integration ========= */
+const charCanvas = document.getElementById('characters');
+const charCtx = charCanvas.getContext('2d');
 
+// Initialize character particles
+window.initCharacters = function() {
+  // This will be called by characters.js
+  console.log('Characters initialized from main');
+};
+
+/* ========= Utilities & Time ========= */
 const NY_TARGET = new Date('2026-01-01T00:00:00');
 const XMAS_START = new Date('2025-12-25T00:00:00');
 
@@ -219,14 +226,14 @@ const wrap = document.getElementById('wrap');
 const lineEl = document.getElementById('line');
 const subEl = document.getElementById('sub');
 
-/* ========= Persistent Storage (Modified to localStorage) ========= */
+/* ========= Persistent Storage ========= */
 let allMessages = [];
 
 async function loadAllMessages(){
   try {
-    const result = localStorage.getItem('shared-gift-messages');
-    if(result){
-      allMessages = JSON.parse(result);
+    const result = await window.storage.get('shared-gift-messages', true);
+    if(result && result.value){
+      allMessages = JSON.parse(result.value);
     }
   } catch(e){
     allMessages = [];
@@ -243,7 +250,7 @@ async function saveMessage(msg){
     allMessages = allMessages.slice(-100);
   }
   try {
-    localStorage.setItem('shared-gift-messages', JSON.stringify(allMessages));
+    await window.storage.set('shared-gift-messages', JSON.stringify(allMessages), true);
     return true;
   } catch(e){
     console.error('Failed to save message:', e);
@@ -380,7 +387,7 @@ document.getElementById('sendBtn').addEventListener('click', async ()=>{
     myMessage = text;
     const saved = await saveMessage(text);
     if(saved){
-      showToast('ข้อความถูกบันทึกแล้ว 💌');
+      showToast('ข้อความถูกบันทึกและแชร์แล้ว 💌');
       await loadAllMessages();
     } else {
       showToast('ข้อความถูกบันทึกในเครื่องแล้ว 💌');
@@ -405,8 +412,7 @@ function showToast(txt){
     borderRadius:'12px',
     zIndex:'60',
     fontSize:'14px',
-    boxShadow:'0 4px 20px rgba(0,0,0,.3)',
-    pointerEvents:'auto'
+    boxShadow:'0 4px 20px rgba(0,0,0,.3)'
   });
   document.body.appendChild(t);
   setTimeout(()=>t.remove(), 2200);
@@ -679,319 +685,6 @@ window.addEventListener('beforeunload', ()=>{
 });
 
 console.log('🎄 Merry Christmas & Happy New Year! 🎆');
-
-/* =========================================
-   PART 2: CHARACTER ANIMATION (Santa & Tree)
-   ========================================= */
-
-(function() {
-  'use strict';
-
-  const canvas = document.getElementById('characters');
-  if (!canvas) {
-    console.error('Canvas #characters not found!');
-    return;
-  }
-
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-  let animationId = null;
-  let mouseX = -9999;
-  let mouseY = -9999;
-
-  // Santa Claus pixel art (bigger and more detailed)
-  const santaPattern = [
-    [0,0,0,0,1,1,1,1,1,1,0,0,0,0],
-    [0,0,0,1,1,1,1,1,1,1,1,0,0,0],
-    [0,0,1,2,2,2,2,2,2,2,2,1,0,0],
-    [0,1,2,2,2,2,2,2,2,2,2,2,1,0],
-    [0,1,2,3,3,2,2,2,2,3,3,2,1,0],
-    [0,1,2,3,3,2,2,2,2,3,3,2,1,0],
-    [0,1,2,2,2,4,2,2,4,2,2,2,1,0],
-    [0,1,2,2,2,2,2,2,2,2,2,2,1,0],
-    [0,0,1,2,2,5,5,5,5,2,2,1,0,0],
-    [0,0,0,1,1,5,5,5,5,1,1,0,0,0],
-    [0,0,1,1,1,1,5,5,1,1,1,1,0,0],
-    [0,1,6,6,6,6,6,6,6,6,6,6,1,0],
-    [1,6,6,6,6,6,6,6,6,6,6,6,6,1],
-    [1,6,6,6,6,6,6,6,6,6,6,6,6,1],
-    [1,6,6,6,6,6,6,6,6,6,6,6,6,1],
-    [0,1,6,6,6,6,6,6,6,6,6,6,1,0],
-    [0,0,1,7,7,6,6,6,6,7,7,1,0,0],
-    [0,0,0,1,7,7,1,1,7,7,1,0,0,0],
-    [0,0,0,1,7,7,1,1,7,7,1,0,0,0],
-    [0,0,0,0,1,1,0,0,1,1,0,0,0,0],
-  ];
-
-  // Christmas Tree pixel art (bigger)
-  const treePattern = [
-    [0,0,0,0,0,8,8,0,0,0,0,0],
-    [0,0,0,0,8,8,8,8,0,0,0,0],
-    [0,0,0,8,8,8,8,8,8,0,0,0],
-    [0,0,8,8,8,9,8,8,8,8,0,0],
-    [0,8,8,8,8,8,8,8,8,8,8,0],
-    [8,8,8,9,8,8,8,9,8,8,8,8],
-    [0,0,8,8,8,8,8,8,8,8,0,0],
-    [0,8,8,8,8,9,8,8,8,8,8,0],
-    [8,8,8,8,8,8,8,8,8,8,8,8],
-    [0,8,8,8,8,8,8,8,8,8,8,0],
-    [0,0,8,8,9,8,8,9,8,8,0,0],
-    [0,8,8,8,8,8,8,8,8,8,8,0],
-    [8,8,8,9,8,8,8,8,9,8,8,8],
-    [0,8,8,8,8,8,8,8,8,8,8,0],
-    [0,0,0,10,10,10,10,10,0,0,0],
-    [0,0,0,10,10,10,10,10,0,0,0],
-    [0,0,0,10,10,10,10,10,0,0,0],
-  ];
-
-  // Enhanced color palette with glow
-  const colors = {
-    0: 'transparent',
-    1: '#FFFFFF',   // white outline/beard
-    2: '#FFE4C4',   // skin tone
-    3: '#1A1A1A',   // eyes
-    4: '#FF69B4',   // rosy cheeks
-    5: '#C41E3A',   // mouth/nose
-    6: '#DC143C',   // santa suit red
-    7: '#2C2C2C',   // boots/belt
-    8: '#228B22',   // tree green
-    9: '#FFD700',   // gold ornaments
-    10: '#8B4513',  // brown trunk
-  };
-
-  // Glow colors for particles
-  const glowColors = {
-    1: 'rgba(255,255,255,0.8)',
-    2: 'rgba(255,228,196,0.6)',
-    3: 'rgba(26,26,26,0.5)',
-    4: 'rgba(255,105,180,0.7)',
-    5: 'rgba(196,30,58,0.6)',
-    6: 'rgba(220,20,60,0.8)',
-    7: 'rgba(44,44,44,0.5)',
-    8: 'rgba(34,139,34,0.7)',
-    9: 'rgba(255,215,0,0.9)',
-    10: 'rgba(139,69,19,0.6)',
-  };
-
-  // Particle class
-  class Particle {
-    constructor(targetX, targetY, color, colorIndex, size) {
-      // Random starting position (scattered)
-      this.x = Math.random() * canvas.width;
-      this.y = Math.random() * canvas.height;
-      
-      this.targetX = targetX;
-      this.targetY = targetY;
-      this.color = color;
-      this.colorIndex = colorIndex;
-      this.size = size;
-      
-      // Velocity
-      this.vx = 0;
-      this.vy = 0;
-      
-      // Drift animation (like drones)
-      this.driftAngle = Math.random() * Math.PI * 2;
-      this.driftSpeed = 0.3 + Math.random() * 0.3;
-      this.driftRadius = 2 + Math.random() * 3;
-      
-      // Individual timing offset
-      this.timeOffset = Math.random() * 1000;
-      
-      // Original target for drift calculation
-      this.baseX = targetX;
-      this.baseY = targetY;
-    }
-
-    update(time, mouseX, mouseY) {
-      // Calculate drift position (circular motion like drone hovering)
-      const driftX = Math.cos(time * 0.001 * this.driftSpeed + this.timeOffset) * this.driftRadius;
-      const driftY = Math.sin(time * 0.001 * this.driftSpeed + this.timeOffset) * this.driftRadius;
-      
-      // Update target with drift
-      const currentTargetX = this.baseX + driftX;
-      const currentTargetY = this.baseY + driftY;
-      
-      // Calculate distance to target
-      let dx = currentTargetX - this.x;
-      let dy = currentTargetY - this.y;
-      
-      // Mouse interaction - repel particles
-      const mouseDistX = mouseX - this.x;
-      const mouseDistY = mouseY - this.y;
-      const mouseDist = Math.sqrt(mouseDistX * mouseDistX + mouseDistY * mouseDistY);
-      const repelRadius = 120;
-      
-      if (mouseDist < repelRadius && mouseDist > 0) {
-        const repelForce = (1 - mouseDist / repelRadius) * 8;
-        dx -= (mouseDistX / mouseDist) * repelForce;
-        dy -= (mouseDistY / mouseDist) * repelForce;
-      }
-      
-      // Spring physics (smooth drone-like movement)
-      const spring = 0.018;
-      const friction = 0.88;
-      
-      this.vx += dx * spring;
-      this.vy += dy * spring;
-      
-      this.vx *= friction;
-      this.vy *= friction;
-      
-      this.x += this.vx;
-      this.y += this.vy;
-    }
-
-    draw(ctx, time) {
-      // Breathing effect on size
-      const breathe = 1 + Math.sin(time * 0.002 + this.timeOffset) * 0.08;
-      const currentSize = this.size * breathe;
-      
-      // Enhanced glow effect
-      const glowSize = currentSize * 3;
-      const gradient = ctx.createRadialGradient(
-        this.x, this.y, 0,
-        this.x, this.y, glowSize
-      );
-      
-      gradient.addColorStop(0, this.color);
-      gradient.addColorStop(0.4, glowColors[this.colorIndex] || this.color);
-      gradient.addColorStop(1, 'rgba(0,0,0,0)');
-      
-      // Draw glow
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, glowSize, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Draw core particle
-      ctx.fillStyle = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, currentSize, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Extra bright center
-      ctx.fillStyle = 'rgba(255,255,255,0.4)';
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, currentSize * 0.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  // Initialize particles from patterns
-  function initParticles() {
-    particles = [];
-    
-    const particleSize = window.innerWidth < 768 ? 4 : 6;
-    const spacing = window.innerWidth < 768 ? 2 : 2.5;
-    
-    // Santa position (left side)
-    const santaX = window.innerWidth * 0.25;
-    const santaY = window.innerHeight * 0.5;
-    const santaScale = window.innerWidth < 768 ? 3 : 4;
-    
-    santaPattern.forEach((row, y) => {
-      row.forEach((pixel, x) => {
-        if (pixel !== 0) {
-          const targetX = santaX + (x - santaPattern[0].length / 2) * particleSize * spacing * santaScale;
-          const targetY = santaY + (y - santaPattern.length / 2) * particleSize * spacing * santaScale;
-          
-          particles.push(new Particle(
-            targetX,
-            targetY,
-            colors[pixel],
-            pixel,
-            particleSize
-          ));
-        }
-      });
-    });
-    
-    // Tree position (right side)
-    const treeX = window.innerWidth * 0.75;
-    const treeY = window.innerHeight * 0.5;
-    const treeScale = window.innerWidth < 768 ? 3.5 : 5;
-    
-    treePattern.forEach((row, y) => {
-      row.forEach((pixel, x) => {
-        if (pixel !== 0) {
-          const targetX = treeX + (x - treePattern[0].length / 2) * particleSize * spacing * treeScale;
-          const targetY = treeY + (y - treePattern.length / 2) * particleSize * spacing * treeScale;
-          
-          particles.push(new Particle(
-            targetX,
-            targetY,
-            colors[pixel],
-            pixel,
-            particleSize
-          ));
-        }
-      });
-    });
-  }
-
-  // Resize canvas
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    initParticles();
-  }
-
-  // Animation loop
-  function animate() {
-    const time = Date.now();
-    
-    // Clear with slight trail effect for smooth motion
-    ctx.fillStyle = 'rgba(0,0,0,0.05)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Update and draw all particles
-    particles.forEach(particle => {
-      particle.update(time, mouseX, mouseY);
-      particle.draw(ctx, time);
-    });
-    
-    animationId = requestAnimationFrame(animate);
-  }
-
-  // Mouse tracking
-  window.addEventListener('mousemove', (e) => {
-    // ปรับ event ให้รับจาก window แทน canvas เพื่อให้ interaction กว้างขึ้น
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
-
-  window.addEventListener('mouseleave', () => {
-    mouseX = -9999;
-    mouseY = -9999;
-  });
-
-  // Touch support
-  window.addEventListener('touchmove', (e) => {
-    // ปรับให้ไม่ preventDefault ทั้งหมดเพื่อให้กดปุ่มอื่นได้
-    if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA'){
-        // e.preventDefault(); 
-    }
-    const touch = e.touches[0];
-    mouseX = touch.clientX;
-    mouseY = touch.clientY;
-  }, { passive: false });
-
-  window.addEventListener('touchend', () => {
-    mouseX = -9999;
-    mouseY = -9999;
-  });
-
-  // Window resize
-  window.addEventListener('resize', resizeCanvas);
-
-  // Initialize
-  resizeCanvas();
-  animate();
-
-  console.log('🎅 Santa & 🎄 Tree characters loaded!');
-
-})();
 </script>
 </body>
 </html>
