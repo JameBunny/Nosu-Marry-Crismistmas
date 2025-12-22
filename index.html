@@ -27,12 +27,15 @@ body::before{
 }
 @keyframes bgMove{0%{transform:translate(0,0)}50%{transform:translate(-3%,3%)}100%{transform:translate(0,0)}}
 
-canvas{position:fixed;inset:0;pointer-events:none;z-index:1}
+/* Canvas layers */
+#snow{position:fixed;inset:0;pointer-events:none;z-index:1}
+#characters{position:fixed;inset:0;pointer-events:auto;z-index:2}
+#fireworks{position:fixed;inset:0;pointer-events:none;z-index:8}
 
 /* ========== CONTENT LAYERS ========== */
 .wrap{
   position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  z-index:3;transform-style:preserve-3d;transition:transform .12s linear;
+  z-index:5;transform-style:preserve-3d;transition:transform .12s linear;
   padding:4vmin;
 }
 .line{
@@ -169,6 +172,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:1}
 
 <!-- canvases -->
 <canvas id="snow"></canvas>
+<canvas id="characters"></canvas>
 <canvas id="fireworks"></canvas>
 
 <!-- audio -->
@@ -202,7 +206,18 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:1}
   </div>
 </div>
 
+<script src="characters.js"></script>
 <script>
+/* ========= Character Canvas Integration ========= */
+const charCanvas = document.getElementById('characters');
+const charCtx = charCanvas.getContext('2d');
+
+// Initialize character particles
+window.initCharacters = function() {
+  // This will be called by characters.js
+  console.log('Characters initialized from main');
+};
+
 /* ========= Utilities & Time ========= */
 const NY_TARGET = new Date('2026-01-01T00:00:00');
 const XMAS_START = new Date('2025-12-25T00:00:00');
@@ -231,7 +246,6 @@ async function saveMessage(msg){
     timestamp: Date.now(),
     id: Date.now() + '-' + Math.random().toString(36).substr(2,9)
   });
-  // Keep last 100 messages
   if(allMessages.length > 100){
     allMessages = allMessages.slice(-100);
   }
@@ -249,7 +263,6 @@ function getRandomMessage(){
   return allMessages[Math.floor(Math.random() * allMessages.length)];
 }
 
-// Load messages on start
 loadAllMessages();
 
 /* ========= TEXT SETUP ========= */
@@ -268,25 +281,21 @@ let iLine = 0, iSub = 0;
 let prevPhase = null;
 let textInterval = null;
 
-/* determine phase */
 function getPhase(){
   const t = new Date();
   if(t >= NY_TARGET) return 'newyear';
   if(t >= XMAS_START) return 'christmas';
-  return 'christmas'; // before Christmas still show Christmas theme
+  return 'christmas';
 }
 
-/* update text with fade effect */
 function updateTexts(){
   const phase = getPhase();
 
-  // Phase changed - reset and trigger effects
   if(phase !== prevPhase){
     prevPhase = phase;
     iLine = 0;
     iSub = 0;
 
-    // Immediate new year celebration
     if(phase === 'newyear'){
       const first = TEXTS.newyear;
       lineEl.textContent = first.line[0];
@@ -302,7 +311,6 @@ function updateTexts(){
   const newLine = data.line[iLine % data.line.length];
   const newSub = data.sub[iSub % data.sub.length];
 
-  // Fade animation
   lineEl.style.opacity = '0';
   subEl.style.opacity = '0';
 
@@ -316,7 +324,6 @@ function updateTexts(){
   }, 300);
 }
 
-// Initialize
 updateTexts();
 textInterval = setInterval(updateTexts, 5000);
 
@@ -381,7 +388,7 @@ document.getElementById('sendBtn').addEventListener('click', async ()=>{
     const saved = await saveMessage(text);
     if(saved){
       showToast('ข้อความถูกบันทึกและแชร์แล้ว 💌');
-      await loadAllMessages(); // Reload to get latest
+      await loadAllMessages();
     } else {
       showToast('ข้อความถูกบันทึกในเครื่องแล้ว 💌');
     }
@@ -411,7 +418,6 @@ function showToast(txt){
   setTimeout(()=>t.remove(), 2200);
 }
 
-/* spawn falling gifts */
 let giftInterval = setInterval(()=>{
   const g = document.createElement('div');
   g.className = 'gift';
@@ -435,7 +441,6 @@ let giftInterval = setInterval(()=>{
 }, 1800);
 
 function openGiftBox(text){
-  // Create gift box container
   const container = document.createElement('div');
   container.className = 'gift-box';
   container.innerHTML = `
@@ -453,7 +458,6 @@ function openGiftBox(text){
   
   document.body.appendChild(container);
   
-  // Sparkle particles
   for(let i=0; i<25; i++){
     const p = document.createElement('div');
     p.textContent = '✨';
@@ -479,12 +483,10 @@ function openGiftBox(text){
     setTimeout(()=>p.remove(), 1200);
   }
   
-  // Open the box after a short delay
   setTimeout(()=>{
     container.classList.add('opening');
   }, 400);
   
-  // Close button
   const closeBtn = container.querySelector('.gift-close');
   closeBtn.addEventListener('click', ()=>{
     container.style.transform = 'translate(-50%,-50%) scale(0)';
@@ -492,7 +494,6 @@ function openGiftBox(text){
     setTimeout(()=>container.remove(), 300);
   });
   
-  // Auto close after 8 seconds
   setTimeout(()=>{
     if(document.body.contains(container)){
       container.style.transform = 'translate(-50%,-50%) scale(0)';
@@ -502,7 +503,7 @@ function openGiftBox(text){
   }, 8000);
 }
 
-/* ========= Snow Canvas (Smoother) ========= */
+/* ========= Snow Canvas ========= */
 const snowC = document.getElementById('snow');
 const snowCtx = snowC.getContext('2d');
 let flakes = [];
@@ -634,14 +635,12 @@ function startNewYear(){
   
   startFireworksRepeat();
   
-  // Flash effect
   wrap.animate([
     {filter:'brightness(1)'},
     {filter:'brightness(1.4)'},
     {filter:'brightness(1)'}
   ], {duration:1500, iterations:1, easing:'ease-out'});
   
-  // Initial burst
   for(let i=0; i<10; i++){
     setTimeout(()=>spawnFirework(), i * 100);
   }
@@ -652,14 +651,12 @@ function applyTilt(rx, ry){
   wrap.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
 }
 
-// Mouse tilt
 window.addEventListener('mousemove', e=>{
   const rx = (e.clientY / window.innerHeight - 0.5) * 6;
   const ry = (e.clientX / window.innerWidth - 0.5) * -6;
   applyTilt(rx, ry);
 });
 
-// Touch tilt
 window.addEventListener('touchmove', e=>{
   if(e.touches.length > 0){
     const t = e.touches[0];
@@ -669,7 +666,6 @@ window.addEventListener('touchmove', e=>{
   }
 }, {passive: true});
 
-// Gyro tilt
 if(window.DeviceOrientationEvent){
   window.addEventListener('deviceorientation', e=>{
     if(e.beta !== null && e.gamma !== null){
